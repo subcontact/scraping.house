@@ -69,4 +69,17 @@ export default class UserProfile {
       throw e;
     }
   }
+
+  /**
+   * Function checks if the user has premium badge or nor
+   * @returns True if the user has premium badge false if not
+   */
+  public async isPremium(): Promise<boolean> {
+    try {
+      await this.page.waitForSelector(selectors.user.profile.base.premiumBadge);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
