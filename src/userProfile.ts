@@ -1,4 +1,4 @@
-import { Page } from 'playwright-core';
+import { Page, errors } from 'playwright-core';
 import selectors from './selectors';
 
 export default class UserProfile {
@@ -21,6 +21,7 @@ export default class UserProfile {
       return;
     }
     await this.page.goto(u);
+    console.log('Navigated to the user profile page');
   }
 
   /**
@@ -45,5 +46,27 @@ export default class UserProfile {
    */
   public async location(): Promise<string> {
     return this.page.textContent(selectors.user.profile.base.location) as Promise<string>;
+  }
+
+  /**
+   * Get the user's about text from the user's profile
+   * @returns The user about text from the user's profile
+   */
+  public async about(): Promise<string> {
+    try {
+      const ri: string = (await this.page.textContent(selectors.user.profile.base.info)) as string;
+      const id: string = (
+        await this.page.textContent(selectors.user.profile.base.infoTextToDelete)
+      ) as string;
+      return (
+        ri.substring(0, ri.lastIndexOf(id))
+      + ri.substring(ri.lastIndexOf(id) + id.length)
+      ).trim();
+    } catch (e) {
+      if (e instanceof errors.TimeoutError) {
+        return '';
+      }
+      throw e;
+    }
   }
 }

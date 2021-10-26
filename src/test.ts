@@ -8,6 +8,7 @@ async function test() {
   console.info(`User full name ${await up.fullName()}`);
   console.info(`User short description ${(await up.shortDescription()).trim()}`);
   console.info(`User location ${(await up.location()).trim()}`);
+  console.info(`User information ${await up.about()}`);
 }
 
 test().then();
