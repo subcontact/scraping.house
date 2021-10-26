@@ -16,6 +16,8 @@ scopes:
       description: All changes related configuration
     - name: dependencies
       description: All changes related dependencies
+    - name: selectors
+      description: All changes related to selectors
 conventions:
     - name: build
       description: Changes that affect the build system or external dependencies
