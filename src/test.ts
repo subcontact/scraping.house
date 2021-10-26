@@ -1,5 +1,5 @@
 import Linkedjs from './linkedjs';
-import UserProfile from './userProfile';
+import UserProfile from './user-profile';
 
 async function test() {
   const l = await Linkedjs.init('firefox', { headless: false }, undefined, 'linkedjs.json');

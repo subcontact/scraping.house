@@ -12,7 +12,7 @@ import {
 
 import fs from 'fs';
 import selectors from './selectors';
-import UserProfile from './userProfile';
+import UserProfile from './user-profile';
 
 export default class Linkedjs {
   private browser: Browser;
