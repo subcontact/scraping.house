@@ -1,4 +1,5 @@
 import { Page } from 'playwright-core';
+import selectors from './selectors';
 
 export default class UserProfile {
   private id: string;
@@ -20,5 +21,13 @@ export default class UserProfile {
       return;
     }
     await this.page.goto(u);
+  }
+
+  /**
+   * Returns the full name of the LinkedIn user
+   * @returns The full name of the user
+   */
+  public async fullName(): Promise<string> {
+    return this.page.textContent(selectors.user.profile.base.fullName) as Promise<string>;
   }
 }
