@@ -38,4 +38,12 @@ export default class UserProfile {
   public async shortDescription(): Promise<string> {
     return this.page.textContent(selectors.user.profile.base.shortDesc) as Promise<string>;
   }
+
+  /**
+   * Returns the user's location from the user's profile
+   * @returns The user's location
+   */
+  public async location(): Promise<string> {
+    return this.page.textContent(selectors.user.profile.base.location) as Promise<string>;
+  }
 }
