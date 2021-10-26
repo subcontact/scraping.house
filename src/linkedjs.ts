@@ -8,10 +8,11 @@ import {
   Browser,
   LaunchOptions,
   Page,
-} from 'playwright';
+} from 'playwright-core';
 
 import fs from 'fs';
 import selectors from './selectors';
+import UserProfile from './userProfile';
 
 export default class Linkedjs {
   private browser: Browser;
@@ -74,6 +75,17 @@ export default class Linkedjs {
     if (rememberMe) {
       Linkedjs.saveAuthenticatedContext(this.context, this.authenticatedContextPath);
     }
+  }
+
+  /**
+   * Goes to the user's profile page and returns the UserProfile instance
+   * @param id The id of the user
+   * @returns The UserProfile object
+   */
+  public async userProfile(id: string): Promise<UserProfile> {
+    const u: UserProfile = new UserProfile(id, this.page);
+    await u.goToUserProfile();
+    return u;
   }
 
   /**
