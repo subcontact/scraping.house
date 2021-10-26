@@ -10,6 +10,7 @@ async function test() {
   console.info(`User location ${(await up.location()).trim()}`);
   console.info(`User information ${await up.about()}`);
   console.info(`User is premium ? ${await up.isPremium()}`);
+  console.info(`User is influencer ${await up.isInfluencer()}`);
 }
 
 test().then();

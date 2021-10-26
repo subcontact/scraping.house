@@ -82,4 +82,17 @@ export default class UserProfile {
       return false;
     }
   }
+
+  /**
+   * Function checks if the user has the influencer badge on his/her profile
+   * @returns true if the user has influencer badge, false if not
+   */
+  public async isInfluencer(): Promise<boolean> {
+    try {
+      await this.page.waitForSelector(selectors.user.profile.base.influencerBadge);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
