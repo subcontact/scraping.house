@@ -30,4 +30,12 @@ export default class UserProfile {
   public async fullName(): Promise<string> {
     return this.page.textContent(selectors.user.profile.base.fullName) as Promise<string>;
   }
+
+  /**
+   * Returns the user's short description from the user's profile
+   * @returns The user's short description
+   */
+  public async shortDescription(): Promise<string> {
+    return this.page.textContent(selectors.user.profile.base.shortDesc) as Promise<string>;
+  }
 }
