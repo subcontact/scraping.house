@@ -1,5 +1,5 @@
 configfilepath: /Users/kaanyagci/Documents/makepad/linkedjs/.concom.yml
-path: ""
+path: /Users/kaanyagci/Documents/makepad/linkedjs
 version: ""
 scopes:
     - name: auth
@@ -14,6 +14,8 @@ scopes:
       description: All changes related to company module
     - name: config
       description: All changes related configuration
+    - name: dependencies
+      description: All changes related dependencies
 conventions:
     - name: build
       description: Changes that affect the build system or external dependencies
