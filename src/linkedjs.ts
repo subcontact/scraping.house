@@ -66,7 +66,6 @@ export default class Linkedjs {
   public async login(username: string, password: string, rememberMe: boolean = true) {
     if (Linkedjs.isFileExists(this.authenticatedContextPath)) {
       // If the authenticated context already exists, do nothing
-      console.info('An authenticated context already exists and will be used');
       return;
     }
     await this.page.fill(selectors.login.username, username);
