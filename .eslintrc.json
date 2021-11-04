@@ -16,7 +16,8 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "semi": "error"
+        "semi": "error",
+        "no-await-in-loop": "off"
     }
    
 }

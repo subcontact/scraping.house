@@ -11,6 +11,9 @@ async function test() {
   console.info(`User information ${await up.about()}`);
   console.info(`User is premium ? ${await up.isPremium()}`);
   console.info(`User is influencer ${await up.isInfluencer()}`);
+  const xps = await up.experiences();
+  console.info(`User experiences: ${JSON.stringify(xps, undefined, 4)}`);
+  await l.close();
 }
 
 test().then();
