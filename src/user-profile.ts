@@ -1,23 +1,30 @@
-import { Page, errors } from 'playwright-core';
+import { Page, errors, ElementHandle } from 'playwright-core';
+import Experience from './models/experience';
+import Role from './models/role';
 import selectors from './selectors';
+import BrowserHelpers from './helpers/browser-helpers';
+import splitDashes from './helpers/string-helpers';
+import DateInterval from './models/date-interval';
 
 export default class UserProfile {
   private id: string;
 
   private page: Page;
 
+  private helpers: BrowserHelpers;
+
   public constructor(id: string, page: Page) {
     this.id = id;
     this.page = page;
+    this.helpers = new BrowserHelpers(this.page);
   }
 
   /**
    * Function navigates to the user's LinkedIn profile page.
    */
   public async goToUserProfile() {
-    const u: string = encodeURI(`https://linkedin.com/in/${this.id}/`);
+    const u: string = encodeURI(`https://www.linkedin.com/in/${this.id}/`);
     if (this.page.url() === u) {
-      console.info('Currenly on the user profile page');
       return;
     }
     await this.page.goto(u);
@@ -29,6 +36,7 @@ export default class UserProfile {
    * @returns The full name of the user
    */
   public async fullName(): Promise<string> {
+    await this.goToUserProfile();
     return this.page.textContent(selectors.user.profile.base.fullName) as Promise<string>;
   }
 
@@ -37,6 +45,8 @@ export default class UserProfile {
    * @returns The user's short description
    */
   public async shortDescription(): Promise<string> {
+    await this.goToUserProfile();
+
     return this.page.textContent(selectors.user.profile.base.shortDesc) as Promise<string>;
   }
 
@@ -45,6 +55,8 @@ export default class UserProfile {
    * @returns The user's location
    */
   public async location(): Promise<string> {
+    await this.goToUserProfile();
+
     return this.page.textContent(selectors.user.profile.base.location) as Promise<string>;
   }
 
@@ -53,6 +65,8 @@ export default class UserProfile {
    * @returns The user about text from the user's profile
    */
   public async about(): Promise<string> {
+    await this.goToUserProfile();
+
     try {
       const ri: string = (await this.page.textContent(selectors.user.profile.base.info)) as string;
       const id: string = (
@@ -75,6 +89,7 @@ export default class UserProfile {
    * @returns True if the user has premium badge false if not
    */
   public async isPremium(): Promise<boolean> {
+    await this.goToUserProfile();
     try {
       await this.page.waitForSelector(selectors.user.profile.base.premiumBadge);
       return true;
@@ -88,11 +103,156 @@ export default class UserProfile {
    * @returns true if the user has influencer badge, false if not
    */
   public async isInfluencer(): Promise<boolean> {
+    await this.goToUserProfile();
     try {
       await this.page.waitForSelector(selectors.user.profile.base.influencerBadge);
       return true;
     } catch (e) {
       return false;
     }
+  }
+
+  /**
+   * Get the list of experiences listed on the user profile
+   * @returns User's work experiences array
+   */
+  public async experiences(): Promise<Experience[]> {
+    const experiences: Experience[] = [];
+    await this.goToUserProfile();
+    await this.helpers.scrollUntilElementAppears(selectors.user.profile.experience.group);
+    await this.helpers.expandAll(selectors.user.profile.experience.moreButton);
+    const experienceWE: ElementHandle<SVGElement | HTMLElement>[] = await this
+      .page.$$(selectors.user.profile.experience.group);
+    for (let i = 0; i < experienceWE.length; i += 1) {
+      const group: string = `${selectors.user.profile.experience.group}[${i + 1}]`;
+      const roleContainer: string = `${group}${selectors.user.profile.experience.roleContainer}`;
+      const link: string = `${group}//a`;
+      const expandRoles: string = `${group}${selectors.user.profile.experience.expandRoles}`;
+      const companyInternalURL = await this.page.getAttribute(link, 'href');
+      try {
+        const roleElements: ElementHandle<SVGElement | HTMLElement>[] = await this.page
+          .$$(roleContainer);
+        await this.helpers.expandAll(expandRoles);
+        experiences.push(await this.getExperiencesWithMultipleRoles(
+          group,
+          roleElements,
+          companyInternalURL ?? '',
+        ));
+      } catch (e) {
+        experiences.push(await this.getExperienceWithSingleRole(group, link, companyInternalURL ?? ''));
+      }
+    }
+    return experiences;
+  }
+
+  /**
+   * Function returns work experience with multiple roles
+   * @param group The selector for the experience group
+   * @param roleElements Array of ElementHandle contains roleElements
+   * @param roleContainer Selector for the role container
+   * @param companyInternalURL URL of the company
+   * @returns The Experience object with multiple roles
+   */
+  private async getExperiencesWithMultipleRoles(
+    group: string,
+    roleElements: ElementHandle<SVGElement | HTMLElement>[],
+    companyInternalURL: string,
+  ): Promise<Experience> {
+    // FIXME: Contrat type is incorrect
+    const experienceGroupTitle: string = `${group}${selectors.user.profile.experience.groupTitle}`;
+    const experienceGroupSubTitle: string = `${group}${selectors.user.profile.experience.groupSubTitle}`;
+    const companyName: string = await this.page.textContent(experienceGroupTitle) ?? '';
+    const totalDuration: string = await this.page.textContent(experienceGroupSubTitle) ?? '';
+    const roles: Role[] = [];
+    for (let i = 0; i < roleElements.length; i += 1) {
+      const roleName: string = (await (await roleElements[i]!
+        .$(selectors.user.profile.experience.roleName))!.textContent()) ?? '';
+      const roleInfos = await roleElements[i]!.$$(selectors.user.profile.experience.roleInfo);
+      const contratType: string = await this.helpers
+        .safeTextContent(selectors.user.profile.experience.contratType, roleElements[i]);
+      let roleLocation: string = '';
+      if (roleInfos.length > 2) roleLocation = await roleInfos[2]!.textContent() ?? '';
+      const ti: string[] = splitDashes(await roleInfos[0]!.textContent() ?? '');
+      roles.push(
+        {
+          name: roleName,
+          location: roleLocation,
+          description: (await this.helpers.filteredTextContent(
+            selectors.user.profile.experience.roleDescription,
+            selectors.user.profile.experience.roleDescriptionMore,
+            roleElements[i],
+          )).trim(),
+          duration: (await roleInfos[1]!.textContent() ?? '').trim(),
+          timeInterval: {
+            start: (ti[0] ?? '').trim(),
+            end: ((ti.length !== 2 ? ti[0] : ti[1]) ?? '').trim(),
+          },
+          contractType: contratType,
+        },
+      );
+    }
+    return {
+      company: {
+        linkedInURL: companyInternalURL ?? '',
+        name: companyName,
+      },
+      roles,
+      location: '',
+      totalDuration,
+    };
+  }
+
+  /**
+   * Returns an experience object with single role
+   * @param group XPath selector for experience group container
+   * @param groupLink XPath selector for experience group link
+   * @param companyURL Company's internal URL
+   * @returns The experience object with single role
+   */
+  private async getExperienceWithSingleRole(
+    group: string,
+    groupLink: string,
+    companyURL: string,
+  ): Promise<Experience> {
+    const experienceSummary: string = `${groupLink}${selectors.user.profile.experience.summary}`;
+    let companyName: string | string[] = `${experienceSummary}${selectors.user.profile.experience.companyName}`;
+    let roleName: string = `${experienceSummary}//h3`;
+    let timeInterval: string | string[] | DateInterval = `${experienceSummary}${selectors.user.profile.experience.timeInterval}`;
+    let location: string = `${experienceSummary}${selectors.user.profile.experience.location}`;
+    let duration: string = `${experienceSummary}${selectors.user.profile.experience.duration}`;
+    let description: string = `${group}${selectors.user.profile.experience.description}`;
+    companyName = await this.page.textContent(companyName) ?? '';
+    companyName = companyName.trim();
+    companyName = companyName.split('\n').filter((e) => e.length !== 0).map((e) => e.trim());
+    const contractType = companyName[1] ?? '';
+    companyName = companyName[0]!;
+    roleName = await this.page.textContent(roleName) ?? '';
+    timeInterval = await this.page.textContent(timeInterval) ?? '';
+    timeInterval = splitDashes(timeInterval);
+    timeInterval = {
+      start: timeInterval[0]!.trim(),
+      end: ((timeInterval.length === 2 ? timeInterval[1] : timeInterval[0])!).trim(),
+    };
+    location = await this.helpers.safeTextContent(location);
+    duration = await this.page.textContent(duration) ?? '';
+    description = await this.helpers.safeTextContent(description);
+    return {
+      company: {
+        name: companyName,
+        linkedInURL: companyURL,
+      },
+      location,
+      roles: [
+        {
+          description,
+          duration,
+          location,
+          name: roleName,
+          timeInterval,
+          contractType,
+        },
+      ],
+      totalDuration: duration,
+    };
   }
 }
