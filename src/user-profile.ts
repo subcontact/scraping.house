@@ -5,6 +5,8 @@ import selectors from './selectors';
 import BrowserHelpers from './helpers/browser-helpers';
 import splitDashes from './helpers/string-helpers';
 import DateInterval from './models/date-interval';
+import Education from './models/education';
+import School from './models/school';
 
 export default class UserProfile {
   private id: string;
@@ -117,6 +119,7 @@ export default class UserProfile {
    * @returns User's work experiences array
    */
   public async experiences(): Promise<Experience[]> {
+    await this.goToUserProfile();
     const experiences: Experience[] = [];
     await this.goToUserProfile();
     await this.helpers.scrollUntilElementAppears(selectors.user.profile.experience.group);
@@ -143,6 +146,60 @@ export default class UserProfile {
       }
     }
     return experiences;
+  }
+
+  /**
+   * Returns the list of education elements on the user's profile
+   * @returns An array containing all the educations elements of the user
+   */
+  public async education(): Promise<Education[]> {
+    await this.goToUserProfile();
+    try {
+      await this.helpers.scrollUntilElementAppears(selectors.user.profile.education.section);
+    } catch (e) {
+      console.warn('The user has not education information on his/her profile');
+      return [];
+    }
+    await this.helpers.expandAll(selectors.user.profile.education.seeMoreButton);
+    const educationListItems: ElementHandle<HTMLElement>[] = (await this.page
+      .$$(selectors.user.profile.education.listItem) ?? []) as ElementHandle<HTMLElement>[];
+    return Promise.all(educationListItems.map(async (educationListItem) => {
+      const school: School = {
+        name: await this.helpers.safeTextContent(
+          selectors.user.profile.education.schoolName,
+          educationListItem,
+        ),
+        url: await (await educationListItem.$('//a'))?.getAttribute('href') ?? '',
+      };
+      let di: string | string[] = await this.helpers.safeTextContent(
+        selectors.user.profile.education.date,
+        educationListItem,
+      );
+      di = splitDashes(di);
+      return <Education>{
+        school,
+        fieldOfStudy: await this.helpers.safeTextContent(
+          selectors.user.profile.education.fieldName,
+          educationListItem,
+        ),
+        degree: await this.helpers.safeTextContent(
+          selectors.user.profile.education.degreeName,
+          educationListItem,
+        ),
+        description: await this.helpers.safeTextContent(
+          selectors.user.profile.education.description,
+          educationListItem,
+        ),
+        activitiesAndSocieties: await this.helpers.safeTextContent(
+          selectors.user.profile.education.activitiesAndSocieties,
+          educationListItem,
+        ),
+        date: {
+          start: parseInt(di[0] ?? '-1', 10),
+          end: (di.length > 1 ? parseInt(di[1]!, 10) : parseInt(di[0] ?? '-1', 10)),
+        },
+      };
+    }));
   }
 
   /**

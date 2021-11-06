@@ -18,6 +18,10 @@ scopes:
       description: All changes related dependencies
     - name: selectors
       description: All changes related to selectors
+    - name: models
+      description: All changes related to models
+    - name: example
+      description: All changes related to the example code
 conventions:
     - name: build
       description: Changes that affect the build system or external dependencies

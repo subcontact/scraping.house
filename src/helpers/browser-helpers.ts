@@ -46,6 +46,7 @@ export default class BrowserHelpers {
   /**
    * Function scrolls the page until the givne element appears on the page.
    * @param selector The selector of the element to check
+   * @throws If the selector does not exists on the current page
    */
   public async scrollUntilElementAppears(selector: string) {
     let i: number = 0;
@@ -69,6 +70,7 @@ export default class BrowserHelpers {
         this.scroll(i);
       }
     }
+    throw new Error(`${selector} does not exists on the current page`);
   }
 
   /**
@@ -102,7 +104,6 @@ export default class BrowserHelpers {
     ignoredElementSelector: string,
     element?: ElementHandle,
   ): Promise<string> {
-    console.debug(`Selector ${selector}`);
     let result = '';
     const textContent = async (s: string): Promise<string | null> => {
       if (element === undefined) {
@@ -123,7 +124,6 @@ export default class BrowserHelpers {
     } catch {
       return '';
     }
-    console.debug(`Filtered text content will return ${result}`);
     return result;
   }
 }
