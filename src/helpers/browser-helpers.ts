@@ -104,7 +104,6 @@ export default class BrowserHelpers {
     ignoredElementSelector: string,
     element?: ElementHandle,
   ): Promise<string> {
-    console.debug(`Selector ${selector}`);
     let result = '';
     const textContent = async (s: string): Promise<string | null> => {
       if (element === undefined) {
@@ -125,7 +124,6 @@ export default class BrowserHelpers {
     } catch {
       return '';
     }
-    console.debug(`Filtered text content will return ${result}`);
     return result;
   }
 }
