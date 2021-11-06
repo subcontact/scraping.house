@@ -2,7 +2,7 @@ import Linkedjs from './linkedjs';
 import UserProfile from './user-profile';
 
 async function test() {
-  const l = await Linkedjs.init('firefox', { headless: false }, undefined, 'linkedjs.json');
+  const l = await Linkedjs.init('firefox', { headless: true }, undefined, 'linkedjs.json');
   await l.login(process.env['LINKEDIN_USERNAME'] as string, process.env['LINKEDIN_PASSWORD'] as string);
   const up: UserProfile = await l.userProfile(process.env['LINKEDIN_PROFILE_ID'] as string);
   console.info(`User full name ${await up.fullName()}`);
@@ -13,6 +13,8 @@ async function test() {
   console.info(`User is influencer ${await up.isInfluencer()}`);
   const xps = await up.experiences();
   console.info(`User experiences: ${JSON.stringify(xps, undefined, 4)}`);
+  const es = await up.education();
+  console.info(`User education ${JSON.stringify(es, undefined, 4)}`);
   await l.close();
 }
 
