@@ -22,6 +22,8 @@ scopes:
       description: All changes related to models
     - name: example
       description: All changes related to the example code
+    - name: modules
+      description: All changes related modules
 conventions:
     - name: build
       description: Changes that affect the build system or external dependencies
