@@ -2,14 +2,11 @@ import { Page } from 'playwright-core';
 import BrowserHelpers from '../helpers/browser-helpers';
 
 export default abstract class Module {
-  protected id: string;
-
   protected page: Page;
 
   protected helpers: BrowserHelpers;
 
-  protected constructor(id: string, page: Page) {
-    this.id = id;
+  protected constructor(page: Page) {
     this.page = page;
     this.helpers = new BrowserHelpers(this.page);
   }

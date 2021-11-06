@@ -6,11 +6,14 @@ import splitDashes from './helpers/string-helpers';
 import DateInterval from './models/date-interval';
 import Education from './models/education';
 import School from './models/school';
-import IsolatablePaged from './models/module';
+import Module from './models/module';
 
-export default class UserProfile extends IsolatablePaged {
+export default class UserProfile extends Module {
+  private id: string;
+
   public constructor(id: string, page: Page) {
-    super(id, page);
+    super(page);
+    this.id = id;
   }
 
   /**
