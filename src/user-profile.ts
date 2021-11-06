@@ -2,29 +2,21 @@ import { Page, errors, ElementHandle } from 'playwright-core';
 import Experience from './models/experience';
 import Role from './models/role';
 import selectors from './selectors';
-import BrowserHelpers from './helpers/browser-helpers';
 import splitDashes from './helpers/string-helpers';
 import DateInterval from './models/date-interval';
 import Education from './models/education';
 import School from './models/school';
+import IsolatablePaged from './models/module';
 
-export default class UserProfile {
-  private id: string;
-
-  private page: Page;
-
-  private helpers: BrowserHelpers;
-
+export default class UserProfile extends IsolatablePaged {
   public constructor(id: string, page: Page) {
-    this.id = id;
-    this.page = page;
-    this.helpers = new BrowserHelpers(this.page);
+    super(id, page);
   }
 
   /**
    * Function navigates to the user's LinkedIn profile page.
    */
-  public async goToUserProfile() {
+  public async init() {
     const u: string = encodeURI(`https://www.linkedin.com/in/${this.id}/`);
     if (this.page.url() === u) {
       return;
@@ -38,7 +30,7 @@ export default class UserProfile {
    * @returns The full name of the user
    */
   public async fullName(): Promise<string> {
-    await this.goToUserProfile();
+    await this.init();
     return this.page.textContent(selectors.user.profile.base.fullName) as Promise<string>;
   }
 
@@ -47,7 +39,7 @@ export default class UserProfile {
    * @returns The user's short description
    */
   public async shortDescription(): Promise<string> {
-    await this.goToUserProfile();
+    await this.init();
 
     return this.page.textContent(selectors.user.profile.base.shortDesc) as Promise<string>;
   }
@@ -57,7 +49,7 @@ export default class UserProfile {
    * @returns The user's location
    */
   public async location(): Promise<string> {
-    await this.goToUserProfile();
+    await this.init();
 
     return this.page.textContent(selectors.user.profile.base.location) as Promise<string>;
   }
@@ -67,7 +59,7 @@ export default class UserProfile {
    * @returns The user about text from the user's profile
    */
   public async about(): Promise<string> {
-    await this.goToUserProfile();
+    await this.init();
 
     try {
       const ri: string = (await this.page.textContent(selectors.user.profile.base.info)) as string;
@@ -91,7 +83,7 @@ export default class UserProfile {
    * @returns True if the user has premium badge false if not
    */
   public async isPremium(): Promise<boolean> {
-    await this.goToUserProfile();
+    await this.init();
     try {
       await this.page.waitForSelector(selectors.user.profile.base.premiumBadge);
       return true;
@@ -105,7 +97,7 @@ export default class UserProfile {
    * @returns true if the user has influencer badge, false if not
    */
   public async isInfluencer(): Promise<boolean> {
-    await this.goToUserProfile();
+    await this.init();
     try {
       await this.page.waitForSelector(selectors.user.profile.base.influencerBadge);
       return true;
@@ -119,9 +111,9 @@ export default class UserProfile {
    * @returns User's work experiences array
    */
   public async experiences(): Promise<Experience[]> {
-    await this.goToUserProfile();
+    await this.init();
     const experiences: Experience[] = [];
-    await this.goToUserProfile();
+    await this.init();
     await this.helpers.scrollUntilElementAppears(selectors.user.profile.experience.group);
     await this.helpers.expandAll(selectors.user.profile.experience.moreButton);
     const experienceWE: ElementHandle<SVGElement | HTMLElement>[] = await this
@@ -153,7 +145,7 @@ export default class UserProfile {
    * @returns An array containing all the educations elements of the user
    */
   public async education(): Promise<Education[]> {
-    await this.goToUserProfile();
+    await this.init();
     try {
       await this.helpers.scrollUntilElementAppears(selectors.user.profile.education.section);
     } catch (e) {
