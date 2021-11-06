@@ -79,11 +79,12 @@ export default class Linkedjs {
   /**
    * Goes to the user's profile page and returns the UserProfile instance
    * @param id The id of the user
+   * @param isolated If true the user profile will be created on a new page. Defaults to true
    * @returns The UserProfile object
    */
-  public async userProfile(id: string): Promise<UserProfile> {
-    const u: UserProfile = new UserProfile(id, this.page);
-    await u.goToUserProfile();
+  public async user(id: string, isolated: boolean = true): Promise<UserProfile> {
+    const u: UserProfile = new UserProfile(id, isolated ? await this.context.newPage() : this.page);
+    await u.init();
     return u;
   }
 
