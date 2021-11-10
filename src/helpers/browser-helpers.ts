@@ -135,4 +135,27 @@ export default class BrowserHelpers {
     }
     return result;
   }
+
+  /**
+   * Returns the attribute of the given element, if not exists an empty string
+   * @param selector The selector of the element
+   * @param attributeName The name of the attribute
+   * @param element The element on which we will run the element search
+   * @returns The content of the attribute of the given element
+   */
+  public async getAttributeSafe(
+    selector: string,
+    attributeName: string,
+    element?: ElementHandle,
+  ): Promise<string> {
+    try {
+      if (element !== undefined) {
+        const e = await element.$(selector);
+        return await e!.getAttribute(attributeName) ?? '';
+      }
+      return await this.page.getAttribute(selector, attributeName) ?? '';
+    } catch {
+      return '';
+    }
+  }
 }
