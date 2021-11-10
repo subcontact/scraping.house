@@ -11,10 +11,19 @@ export default class BrowserHelpers {
    * Function clicks on the selector until it disappears
    * @param selector The selector to click on to expand
    */
-  public async expandAll(selector: string): Promise<void> {
+  public async clickUntilElementDissapears(
+    selector: string,
+    element?: ElementHandle,
+  ): Promise<void> {
     try {
-      await this.page.click(selector);
-      this.expandAll(selector);
+      if (element === undefined) {
+        await this.page.click(selector);
+        this.clickUntilElementDissapears(selector);
+      } else {
+        const e = await element.$(selector);
+        await e!.click();
+        this.clickUntilElementDissapears(selector, element);
+      }
     } catch (e) {
       (() => {})();
     }
