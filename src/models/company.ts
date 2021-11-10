@@ -1,4 +1,4 @@
 export default interface Company {
   name: string;
-  linkedInURL: string;
+  linkedInURL: string|undefined;
 }
