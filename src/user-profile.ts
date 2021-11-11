@@ -8,6 +8,11 @@ import Education from './models/education';
 import School from './models/school';
 import Module from './models/module';
 
+type StringOrNotDefined = string | null | undefined;
+type ElementHandlePromiseOrStringPromiseOrString =
+Promise<ElementHandle<SVGElement | HTMLElement> | string | null | undefined> |
+StringOrNotDefined | ElementHandle<SVGElement | HTMLElement>;
+
 export default class UserProfile extends Module {
   private id: string;
 
@@ -115,32 +120,38 @@ export default class UserProfile extends Module {
    */
   public async experiences(): Promise<Experience[]> {
     await this.init();
-    const experiences: Experience[] = [];
-    await this.init();
-    await this.helpers.scrollUntilElementAppears(selectors.user.profile.experience.group);
-    await this.helpers.expandAll(selectors.user.profile.experience.moreButton);
+    try {
+      await this.helpers.scrollUntilElementAppears(selectors.user.profile.experience.group);
+    } catch (e) {
+      return [];
+    }
+    await this.helpers.clickUntilElementDissapears(selectors.user.profile.experience.moreButton);
     const experienceWE: ElementHandle<SVGElement | HTMLElement>[] = await this
       .page.$$(selectors.user.profile.experience.group);
-    for (let i = 0; i < experienceWE.length; i += 1) {
-      const group: string = `${selectors.user.profile.experience.group}[${i + 1}]`;
-      const roleContainer: string = `${group}${selectors.user.profile.experience.roleContainer}`;
-      const link: string = `${group}//a`;
-      const expandRoles: string = `${group}${selectors.user.profile.experience.expandRoles}`;
-      const companyInternalURL = await this.page.getAttribute(link, 'href');
-      try {
-        const roleElements: ElementHandle<SVGElement | HTMLElement>[] = await this.page
-          .$$(roleContainer);
-        await this.helpers.expandAll(expandRoles);
-        experiences.push(await this.getExperiencesWithMultipleRoles(
-          group,
-          roleElements,
-          companyInternalURL ?? '',
-        ));
-      } catch (e) {
-        experiences.push(await this.getExperienceWithSingleRole(group, link, companyInternalURL ?? ''));
-      }
-    }
-    return experiences;
+    return Promise.all(experienceWE.map(async (experienceItem) => {
+      const companyURLLink: Promise<string> = this.helpers.getAttributeSafe('//a', 'href', experienceItem);
+      const roleElements: Promise<ElementHandle<SVGElement | HTMLElement>[]> = experienceItem
+        .$$(selectors.user.profile.experience.roleContainer);
+      await this.helpers.clickUntilElementDissapears(
+        selectors.user.profile.experience.expandRoles,
+        experienceItem,
+      );
+      return Promise.all([roleElements, companyURLLink]).then(([re, curl]) => {
+        console.log(`Number of role elements ${re.length}`);
+        if (re.length) {
+          // If there's at least one role
+          return this.getExperiencesWithMultipleRoles(
+            experienceItem,
+            re,
+            curl,
+          );
+        }
+        return this.getExperienceWithSingleRole(
+          experienceItem,
+          companyURLLink,
+        );
+      });
+    }));
   }
 
   /**
@@ -155,7 +166,7 @@ export default class UserProfile extends Module {
       console.warn('The user has not education information on his/her profile');
       return [];
     }
-    await this.helpers.expandAll(selectors.user.profile.education.seeMoreButton);
+    await this.helpers.clickUntilElementDissapears(selectors.user.profile.education.seeMoreButton);
     const educationListItems: ElementHandle<HTMLElement>[] = (await this.page
       .$$(selectors.user.profile.education.listItem) ?? []) as ElementHandle<HTMLElement>[];
     return Promise.all(educationListItems.map(async (educationListItem) => {
@@ -199,51 +210,69 @@ export default class UserProfile extends Module {
 
   /**
    * Function returns work experience with multiple roles
-   * @param group The selector for the experience group
+   * @param experienceItem The element handle related to the work experience
    * @param roleElements Array of ElementHandle contains roleElements
    * @param roleContainer Selector for the role container
    * @param companyInternalURL URL of the company
    * @returns The Experience object with multiple roles
    */
-  private async getExperiencesWithMultipleRoles(
-    group: string,
+  private getExperiencesWithMultipleRoles(
+    experienceItem: ElementHandle,
     roleElements: ElementHandle<SVGElement | HTMLElement>[],
     companyInternalURL: string,
   ): Promise<Experience> {
-    // FIXME: Contrat type is incorrect
-    const experienceGroupTitle: string = `${group}${selectors.user.profile.experience.groupTitle}`;
-    const experienceGroupSubTitle: string = `${group}${selectors.user.profile.experience.groupSubTitle}`;
-    const companyName: string = await this.page.textContent(experienceGroupTitle) ?? '';
-    const totalDuration: string = await this.page.textContent(experienceGroupSubTitle) ?? '';
-    const roles: Role[] = [];
-    for (let i = 0; i < roleElements.length; i += 1) {
-      const roleName: string = (await (await roleElements[i]!
-        .$(selectors.user.profile.experience.roleName))!.textContent()) ?? '';
-      const roleInfos = await roleElements[i]!.$$(selectors.user.profile.experience.roleInfo);
-      const contratType: string = await this.helpers
-        .safeTextContent(selectors.user.profile.experience.contratType, roleElements[i]);
-      let roleLocation: string = '';
-      if (roleInfos.length > 2) roleLocation = await roleInfos[2]!.textContent() ?? '';
-      const ti: string[] = splitDashes(await roleInfos[0]!.textContent() ?? '');
-      roles.push(
-        {
-          name: roleName,
-          location: roleLocation,
-          description: (await this.helpers.filteredTextContent(
-            selectors.user.profile.experience.roleDescription,
-            selectors.user.profile.experience.roleDescriptionMore,
-            roleElements[i],
-          )).trim(),
-          duration: (await roleInfos[1]!.textContent() ?? '').trim(),
+    return Promise.all<Experience | Role | string | undefined>([
+      this.helpers.safeTextContent(selectors.user.profile.experience.groupTitle, experienceItem),
+      this.helpers.safeTextContent(selectors.user.profile.experience.groupSubTitle, experienceItem),
+      ...roleElements.map(async (roleElement) => {
+        const roleName: ElementHandlePromiseOrStringPromiseOrString = roleElement.$(
+          selectors.user.profile.experience.roleName,
+        ).then((e) => e?.textContent());
+        let roleInfo:
+        Promise<ElementHandle<SVGElement | HTMLElement>[]> |
+        ElementHandle<SVGElement | HTMLElement>[] = roleElement.$$(
+          selectors.user.profile.experience.roleInfo,
+        );
+        const contractType: ElementHandlePromiseOrStringPromiseOrString = this.helpers
+          .safeTextContent(
+            selectors.user.profile.experience.contratType,
+            roleElement,
+          );
+        roleInfo = await roleInfo;
+        const roleLocation: ElementHandlePromiseOrStringPromiseOrString = (
+          (roleInfo.length > 2) ? roleInfo[2]!.textContent() : ''
+        );
+        const ti: string[] = splitDashes(await roleInfo[0]!.textContent() ?? '');
+        return Promise.all(
+          [
+            roleName,
+            contractType,
+            roleLocation,
+            roleInfo[1]!.textContent(),
+            this.helpers.filteredTextContent(
+              selectors.user.profile.experience.roleDescription,
+              selectors.user.profile.experience.roleDescriptionMore,
+              roleElement,
+            ),
+          ],
+        ).then((
+          [rn,
+            ct,
+            rl,
+            duration,
+            description],
+        ) => (<Role>{
+          name: (rn as StringOrNotDefined) ?? '',
+          location: (rl as StringOrNotDefined) ?? '',
+          description: description ?? '',
+          duration: (duration ?? '').trim(),
           timeInterval: {
             start: (ti[0] ?? '').trim(),
             end: ((ti.length !== 2 ? ti[0] : ti[1]) ?? '').trim(),
           },
-          contractType: contratType,
-        },
-      );
-    }
-    return {
+          contractType: (ct as StringOrNotDefined) ?? '',
+        }));
+      })]).then(([companyName, totalDuration, ...roles]) => (<Experience>{
       company: {
         linkedInURL: companyInternalURL ?? '',
         name: companyName,
@@ -251,60 +280,63 @@ export default class UserProfile extends Module {
       roles,
       location: '',
       totalDuration,
-    };
+    }));
   }
 
   /**
    * Returns an experience object with single role
-   * @param group XPath selector for experience group container
-   * @param groupLink XPath selector for experience group link
+   * @param experienceItem The element handle related to the experience
    * @param companyURL Company's internal URL
    * @returns The experience object with single role
    */
-  private async getExperienceWithSingleRole(
-    group: string,
-    groupLink: string,
-    companyURL: string,
+  private getExperienceWithSingleRole(
+    experienceItem: ElementHandle,
+    companyURL: Promise<string>,
   ): Promise<Experience> {
-    const experienceSummary: string = `${groupLink}${selectors.user.profile.experience.summary}`;
-    let companyName: string | string[] = `${experienceSummary}${selectors.user.profile.experience.companyName}`;
-    let roleName: string = `${experienceSummary}//h3`;
-    let timeInterval: string | string[] | DateInterval = `${experienceSummary}${selectors.user.profile.experience.timeInterval}`;
-    let location: string = `${experienceSummary}${selectors.user.profile.experience.location}`;
-    let duration: string = `${experienceSummary}${selectors.user.profile.experience.duration}`;
-    let description: string = `${group}${selectors.user.profile.experience.description}`;
-    companyName = await this.page.textContent(companyName) ?? '';
-    companyName = companyName.trim();
-    companyName = companyName.split('\n').filter((e) => e.length !== 0).map((e) => e.trim());
-    const contractType = companyName[1] ?? '';
-    companyName = companyName[0]!;
-    roleName = await this.page.textContent(roleName) ?? '';
-    timeInterval = await this.page.textContent(timeInterval) ?? '';
-    timeInterval = splitDashes(timeInterval);
-    timeInterval = {
-      start: timeInterval[0]!.trim(),
-      end: ((timeInterval.length === 2 ? timeInterval[1] : timeInterval[0])!).trim(),
-    };
-    location = await this.helpers.safeTextContent(location);
-    duration = await this.page.textContent(duration) ?? '';
-    description = await this.helpers.safeTextContent(description);
-    return {
-      company: {
-        name: companyName,
-        linkedInURL: companyURL,
-      },
-      location,
-      roles: [
-        {
-          description,
-          duration,
-          location,
-          name: roleName,
-          timeInterval,
-          contractType,
+    const companyName: string = `${selectors.user.profile.experience.summary}${selectors.user.profile.experience.companyName}`;
+    const roleName: string = `${selectors.user.profile.experience.summary}//h3`;
+    const timeInterval: string = `${selectors.user.profile.experience.summary}${selectors.user.profile.experience.timeInterval}`;
+    const location: string = `${selectors.user.profile.experience.summary}${selectors.user.profile.experience.location}`;
+    const duration: string = `${selectors.user.profile.experience.summary}${selectors.user.profile.experience.duration}`;
+    const description: string = `${selectors.user.profile.experience.description}`;
+    return Promise.all([
+      this.helpers.safeTextContent(companyName, experienceItem),
+      this.helpers.safeTextContent(timeInterval, experienceItem),
+      this.helpers.safeTextContent(location, experienceItem),
+      this.helpers.safeTextContent(duration, experienceItem),
+      this.helpers.safeTextContent(description, experienceItem),
+      this.helpers.safeTextContent(roleName, experienceItem),
+      companyURL,
+    ]).then(([cn, tInterval, loc, dur, desc, rn, url]) => {
+      const parsedCompanyName: string[] = cn.split('\n').filter((e) => e.length !== 0).map((e) => e.trim());
+      const contractType = parsedCompanyName[1] ?? '';
+      const splittedTimeInterval: string[] = splitDashes(tInterval);
+      const dateInterval: DateInterval = {
+        start: splittedTimeInterval[0]!.trim(),
+        end: (
+          (splittedTimeInterval.length === 2
+            ? splittedTimeInterval[1]
+            : splittedTimeInterval[0]
+          )!).trim(),
+      };
+      return {
+        company: {
+          name: parsedCompanyName[0]!,
+          linkedInURL: url,
         },
-      ],
-      totalDuration: duration,
-    };
+        location: loc,
+        roles: [
+          {
+            description: desc,
+            duration: dur,
+            location: loc,
+            name: rn,
+            timeInterval: dateInterval,
+            contractType,
+          },
+        ],
+        totalDuration: dur,
+      };
+    });
   }
 }
