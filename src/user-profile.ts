@@ -167,45 +167,62 @@ export default class UserProfile extends Module {
       return [];
     }
     await this.helpers.clickUntilElementDissapears(selectors.user.profile.education.seeMoreButton);
-    const educationListItems: ElementHandle<HTMLElement>[] = (await this.page
-      .$$(selectors.user.profile.education.listItem) ?? []) as ElementHandle<HTMLElement>[];
-    return Promise.all(educationListItems.map(async (educationListItem) => {
-      const school: School = {
-        name: await this.helpers.safeTextContent(
-          selectors.user.profile.education.schoolName,
-          educationListItem,
-        ),
-        url: await (await educationListItem.$('//a'))?.getAttribute('href') ?? '',
-      };
-      let di: string | string[] = await this.helpers.safeTextContent(
-        selectors.user.profile.education.date,
-        educationListItem,
-      );
-      di = splitDashes(di);
-      return <Education>{
-        school,
-        fieldOfStudy: await this.helpers.safeTextContent(
-          selectors.user.profile.education.fieldName,
-          educationListItem,
-        ),
-        degree: await this.helpers.safeTextContent(
-          selectors.user.profile.education.degreeName,
-          educationListItem,
-        ),
-        description: await this.helpers.safeTextContent(
-          selectors.user.profile.education.description,
-          educationListItem,
-        ),
-        activitiesAndSocieties: await this.helpers.safeTextContent(
-          selectors.user.profile.education.activitiesAndSocieties,
-          educationListItem,
-        ),
-        date: {
-          start: parseInt(di[0] ?? '-1', 10),
-          end: (di.length > 1 ? parseInt(di[1]!, 10) : parseInt(di[0] ?? '-1', 10)),
-        },
-      };
-    }));
+    // Use then instead
+    return this.page
+      .$$(selectors.user.profile.education.listItem)
+      .then((educationListItems) => Promise.all(educationListItems
+        .map((educationListItem) => Promise.all([
+          this.helpers.safeTextContent(
+            selectors.user.profile.education.schoolName,
+            educationListItem,
+          ),
+          this.helpers.getAttributeSafe('//a', 'href', educationListItem),
+          this.helpers.safeTextContent(
+            selectors.user.profile.education.date,
+            educationListItem,
+          ),
+          this.helpers.safeTextContent(
+            selectors.user.profile.education.fieldName,
+            educationListItem,
+          ),
+          this.helpers.safeTextContent(
+            selectors.user.profile.education.degreeName,
+            educationListItem,
+          ),
+          this.helpers.safeTextContent(
+            selectors.user.profile.education.description,
+            educationListItem,
+          ),
+          this.helpers.safeTextContent(
+            selectors.user.profile.education.activitiesAndSocieties,
+            educationListItem,
+          ),
+        ]).then(([
+          schoolName,
+          schoolURL,
+          dateInterval,
+          fieldOfStudy,
+          degree,
+          description,
+          activitiesAndSocieties,
+        ]) => {
+          const school: School = {
+            name: schoolName,
+            url: schoolURL,
+          };
+          const di: string[] = splitDashes(dateInterval);
+          return <Education>{
+            school,
+            fieldOfStudy,
+            degree,
+            description,
+            activitiesAndSocieties,
+            date: {
+              start: parseInt(di[0] ?? '-1', 10),
+              end: (di.length > 1 ? parseInt(di[1]!, 10) : parseInt(di[0] ?? '-1', 10)),
+            },
+          };
+        }))));
   }
 
   /**
