@@ -24,6 +24,8 @@ scopes:
       description: All changes related to the example code
     - name: modules
       description: All changes related modules
+    - name: helpers
+      description: All changes related to the helper functions
 conventions:
     - name: build
       description: Changes that affect the build system or external dependencies
