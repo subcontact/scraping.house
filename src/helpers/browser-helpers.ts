@@ -68,6 +68,7 @@ export default class BrowserHelpers {
     while (i <= max) {
       try {
         await this.page.waitForSelector(selector);
+        await this.page.$eval(selector, (elem) => elem.scrollIntoView());
         return;
       } catch (e) {
         i += (await this.getScrollableHeight()) / 10;
