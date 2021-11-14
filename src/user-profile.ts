@@ -166,7 +166,13 @@ export default class UserProfile extends Module {
       console.warn('The user has not education information on his/her profile');
       return [];
     }
-    await this.helpers.clickUntilElementDissapears(selectors.user.profile.education.seeMoreButton);
+    const educationSection = await this.page.$(
+      selectors.user.profile.education.section,
+    ) as ElementHandle;
+    await this.helpers.clickUntilElementDissapears(
+      selectors.user.profile.education.seeMoreButton,
+      educationSection,
+    );
     // Use then instead
     return this.page
       .$$(selectors.user.profile.education.listItem)

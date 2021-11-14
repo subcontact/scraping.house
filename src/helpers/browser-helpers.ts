@@ -18,12 +18,12 @@ export default class BrowserHelpers {
     try {
       if (element === undefined) {
         await this.page.click(selector);
-        this.clickUntilElementDissapears(selector);
       } else {
+        await this.page.waitForSelector(selector);
         const e = await element.$(selector);
         await e!.click();
-        this.clickUntilElementDissapears(selector, element);
       }
+      this.clickUntilElementDissapears(selector, element);
     } catch (e) {
       (() => {})();
     }
@@ -62,20 +62,16 @@ export default class BrowserHelpers {
     try {
       await this.page.waitForSelector(selector);
     } catch (e) {
-      console.debug('Selector is not here. Scrolling to the top');
       await this.scrollToTop();
     }
     let max = await this.getScrollableHeight();
     while (i <= max) {
       try {
-        console.debug('Looking for selector');
         await this.page.waitForSelector(selector);
-        console.debug("Element appeared. We're done here");
         return;
       } catch (e) {
         i += (await this.getScrollableHeight()) / 10;
         max = await this.getScrollableHeight();
-        console.info(`Selector is still not here i = ${i} max = ${max}. Keep scrolling`);
         this.scroll(i);
       }
     }
