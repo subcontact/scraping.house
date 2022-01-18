@@ -313,7 +313,7 @@ export default class UserProfile extends Module {
             },
             // FIXME: Credentials not working check WHY?
             credential: {
-              id: credentialId.trim(),
+              id: credentialId.replace(/\s*credential\s+id\s*/i, '').trim(),
               url: credentialURL.trim(),
             },
             // FIXME: We can not parse dates with dashes check WHY?
