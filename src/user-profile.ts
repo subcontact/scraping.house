@@ -7,6 +7,7 @@ import DateInterval from './models/date-interval';
 import Education from './models/education';
 import School from './models/school';
 import Module from './models/module';
+import Certification from './models/certification';
 
 type StringOrNotDefined = string | null | undefined;
 type ElementHandlePromiseOrStringPromiseOrString =
@@ -227,6 +228,81 @@ export default class UserProfile extends Module {
               start: parseInt(di[0] ?? '-1', 10),
               end: (di.length > 1 ? parseInt(di[1]!, 10) : parseInt(di[0] ?? '-1', 10)),
             },
+          };
+        }))));
+  }
+
+  // TODO: Complete JSDoc
+  public async certifications(): Promise<Certification[]> {
+    await this.init();
+    try {
+      await this.helpers.scrollUntilElementAppears(selectors.user.profile.certifications.section);
+    } catch (e) {
+      console.warn('User has no experience section on his/her profile');
+      return [];
+    }
+    const section: ElementHandle = await this.page.$(
+      selectors.user.profile.certifications.section,
+    ) as ElementHandle;
+    await this.helpers.clickUntilElementDissapears(
+      selectors.user.profile.certifications.seeMore,
+      section,
+    );
+    await this.page.waitForTimeout(5000);
+    return section.$$(selectors.user.profile.certifications.item)
+      .then((certificationItems) => Promise.all(certificationItems
+        .map((certificationItem) => Promise.all([
+          this.helpers.getAttributeSafe(
+            selectors.user.profile.certifications.companyURL,
+            'href',
+            certificationItem,
+          ),
+          this.helpers.safeTextContent(
+            selectors.user.profile.certifications.companyName,
+            certificationItem,
+          ),
+          this.helpers.safeTextContent(
+            selectors.user.profile.certifications.name,
+            certificationItem,
+          ),
+          this.helpers.safeTextContent(
+            selectors.user.profile.certifications.dates,
+            certificationItem,
+          ),
+          this.helpers.safeTextContent(
+            selectors.user.profile.certifications.credential.id,
+            certificationItem,
+          ),
+          this.helpers.getAttributeSafe(
+            selectors.user.profile.certifications.credential.url,
+            'href',
+            certificationItem,
+          ),
+        // TODO: Complete with others
+        ]).then(([
+          companyUrl,
+          companyName,
+          certificateName,
+          dates,
+          credentialId,
+          credentialURL,
+        ]) => {
+          console.debug(`Certificate dates ${dates}`);
+
+          return <Certification>{
+            name: certificateName.trim(),
+            issuer: {
+              name: companyName.trim(),
+              linkedInURL: companyUrl.trim(),
+            },
+            // FIXME: Credentials not working check WHY?
+            credential: {
+              id: credentialId.trim(),
+              url: credentialURL.trim(),
+            },
+            // FIXME: We can not parse dates with dashes check WHY?
+            issued: '',
+            expiration: '',
           };
         }))));
   }

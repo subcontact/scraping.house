@@ -147,6 +147,7 @@ export default class BrowserHelpers {
   ): Promise<string> {
     try {
       if (element !== undefined) {
+        await element.waitForSelector(selector);
         const e = await element.$(selector);
         return await e!.getAttribute(attributeName) ?? '';
       }
