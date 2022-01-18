@@ -59,7 +59,7 @@ export default {
         dates: '//p[2]/span[2]',
         credential: {
           id: '//p[3]//span[2]',
-          url: "a[contains(@class,'pv-certifications-entity__credential-link')]",
+          url: "//a[contains(@class,'pv-certifications-entity__credential-link')]",
         },
       },
     },
