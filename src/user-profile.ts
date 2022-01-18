@@ -287,8 +287,24 @@ export default class UserProfile extends Module {
           credentialId,
           credentialURL,
         ]) => {
-          console.debug(`Certificate dates ${dates}`);
-
+          /*
+            TODO: Find a way to handle texts for other languages
+            (ideally it should be language free matching)
+           */
+          const matchResult: RegExpMatchArray | null = dates.match(/issued\s*([^\d]*\s+[0-9]+)\s*(no)? expiration date\s*([^\d]*\s+[0-9]+)?/i);
+          const parsedDate: { issued: string, expiration: string } = { issued: '', expiration: '' };
+          if (
+            matchResult !== undefined
+            && matchResult !== null
+          ) {
+            console.log(`dates ${dates}. Math result length ${matchResult.length}`);
+            parsedDate.issued = matchResult[1]!;
+            console.log(`First match ${matchResult[1]}`);
+            // If the second match is not undefined then the third match will be undefined
+            parsedDate.expiration = (matchResult[2] ? matchResult[3] ?? 'N/A' : 'N/A');
+            console.log(`Second match match ${matchResult[2]}`);
+            console.log(`Third match match ${matchResult[3]}`);
+          }
           return <Certification>{
             name: certificateName.trim(),
             issuer: {
@@ -301,8 +317,8 @@ export default class UserProfile extends Module {
               url: credentialURL.trim(),
             },
             // FIXME: We can not parse dates with dashes check WHY?
-            issued: '',
-            expiration: '',
+            issued: parsedDate.issued,
+            expiration: parsedDate.expiration,
           };
         }))));
   }
