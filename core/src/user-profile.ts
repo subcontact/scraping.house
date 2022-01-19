@@ -265,7 +265,10 @@ export default class UserProfile extends Module {
             const matchResult: RegExpMatchArray | null = dates.match(
               /issued\s*([^\d]*\s+[0-9]+)\s*(no)? expiration date\s*([^\d]*\s+[0-9]+)?/i
             );
-            const parsedDate: { issued: string; expiration: string } = { issued: '', expiration: '' };
+            const parsedDate: { issued: string; expiration: string } = {
+              issued: '',
+              expiration: ''
+            };
             if (matchResult !== undefined && matchResult !== null) {
               console.log(`dates ${dates}. Math result length ${matchResult.length}`);
               parsedDate.issued = matchResult[1]!;
