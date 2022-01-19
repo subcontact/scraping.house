@@ -391,6 +391,10 @@
     {
       "packageName": "@linked/api",
       "projectFolder": "api"
+    },
+    {
+      "packageName": "@linked/cli",
+      "projectFolder": "cli"
     }
     // {
     //   /**

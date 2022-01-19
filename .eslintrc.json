@@ -14,5 +14,6 @@
     "no-await-in-loop": "off",
     "no-console": "off",
     "max-len": ["warn", 110]
-  }
+  },
+  "root": true
 }
