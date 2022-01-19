@@ -1,4 +1,4 @@
 export default interface School {
-    name: string;
-    url: string;
+  name: string;
+  url: string;
 }

@@ -11,10 +11,7 @@ export default class BrowserHelpers {
    * Function clicks on the selector until it disappears
    * @param selector The selector to click on to expand
    */
-  public async clickUntilElementDissapears(
-    selector: string,
-    element?: ElementHandle,
-  ): Promise<void> {
+  public async clickUntilElementDissapears(selector: string, element?: ElementHandle): Promise<void> {
     try {
       if (element === undefined) {
         await this.page.click(selector);
@@ -93,7 +90,7 @@ export default class BrowserHelpers {
       return (await element.$(s))!.textContent();
     };
     try {
-      return await textContent(selector) ?? '';
+      return (await textContent(selector)) ?? '';
     } catch (e) {
       return '';
     }
@@ -108,7 +105,7 @@ export default class BrowserHelpers {
   public async filteredTextContent(
     selector: string,
     ignoredElementSelector: string,
-    element?: ElementHandle,
+    element?: ElementHandle
   ): Promise<string> {
     let result = '';
     const textContent = async (s: string): Promise<string | null> => {
@@ -118,10 +115,10 @@ export default class BrowserHelpers {
       return (await element.$(s))!.textContent();
     };
     try {
-      result = await textContent(selector) ?? '';
+      result = (await textContent(selector)) ?? '';
       try {
         const showMore: string = `${selector}${ignoredElementSelector}`;
-        const textToIgnore: string = await textContent(showMore) ?? '';
+        const textToIgnore: string = (await textContent(showMore)) ?? '';
         const ii: number = result.lastIndexOf(textToIgnore);
         result = `${result.substring(0, ii)}${result.substring(ii + textToIgnore.length)}`;
       } catch {
@@ -143,15 +140,15 @@ export default class BrowserHelpers {
   public async getAttributeSafe(
     selector: string,
     attributeName: string,
-    element?: ElementHandle,
+    element?: ElementHandle
   ): Promise<string> {
     try {
       if (element !== undefined) {
         await element.waitForSelector(selector);
         const e = await element.$(selector);
-        return await e!.getAttribute(attributeName) ?? '';
+        return (await e!.getAttribute(attributeName)) ?? '';
       }
-      return await this.page.getAttribute(selector, attributeName) ?? '';
+      return (await this.page.getAttribute(selector, attributeName)) ?? '';
     } catch {
       return '';
     }
