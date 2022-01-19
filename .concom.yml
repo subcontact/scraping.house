@@ -1,5 +1,5 @@
-configfilepath: /Users/kaanyagci/Documents/makepad/linkedjs/.concom.yml
-path: /Users/kaanyagci/Documents/makepad/linkedjs
+configfilepath: /Users/kaanyagci/Documents/Makepad/linkedjs/.concom.yml
+path: /Users/kaanyagci/Documents/Makepad/linkedjs
 version: ''
 scopes:
   - name: auth
@@ -26,6 +26,10 @@ scopes:
     description: All changes related modules
   - name: helpers
     description: All changes related to the helper functions
+  - name: core
+    description: All changes related to the core modules files in general way
+  - name: api
+    description: All changes related to the API module
 conventions:
   - name: build
     description: Changes that affect the build system or external dependencies
