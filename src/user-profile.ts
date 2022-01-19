@@ -232,7 +232,10 @@ export default class UserProfile extends Module {
         }))));
   }
 
-  // TODO: Complete JSDoc
+  /**
+   * Function get the certification items from the user's profile
+   * @returns The list of the certification items from user's profile
+   */
   public async certifications(): Promise<Certification[]> {
     await this.init();
     try {
