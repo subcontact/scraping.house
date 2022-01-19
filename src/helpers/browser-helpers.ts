@@ -11,10 +11,19 @@ export default class BrowserHelpers {
    * Function clicks on the selector until it disappears
    * @param selector The selector to click on to expand
    */
-  public async expandAll(selector: string): Promise<void> {
+  public async clickUntilElementDissapears(
+    selector: string,
+    element?: ElementHandle,
+  ): Promise<void> {
     try {
-      await this.page.click(selector);
-      this.expandAll(selector);
+      if (element === undefined) {
+        await this.page.click(selector);
+      } else {
+        await this.page.waitForSelector(selector);
+        const e = await element.$(selector);
+        await e!.click();
+      }
+      this.clickUntilElementDissapears(selector, element);
     } catch (e) {
       (() => {})();
     }
@@ -53,20 +62,17 @@ export default class BrowserHelpers {
     try {
       await this.page.waitForSelector(selector);
     } catch (e) {
-      console.debug('Selector is not here. Scrolling to the top');
       await this.scrollToTop();
     }
     let max = await this.getScrollableHeight();
     while (i <= max) {
       try {
-        console.debug('Looking for selector');
         await this.page.waitForSelector(selector);
-        console.debug("Element appeared. We're done here");
+        await this.page.$eval(selector, (elem) => elem.scrollIntoView());
         return;
       } catch (e) {
         i += (await this.getScrollableHeight()) / 10;
         max = await this.getScrollableHeight();
-        console.info(`Selector is still not here i = ${i} max = ${max}. Keep scrolling`);
         this.scroll(i);
       }
     }
@@ -125,5 +131,29 @@ export default class BrowserHelpers {
       return '';
     }
     return result;
+  }
+
+  /**
+   * Returns the attribute of the given element, if not exists an empty string
+   * @param selector The selector of the element
+   * @param attributeName The name of the attribute
+   * @param element The element on which we will run the element search
+   * @returns The content of the attribute of the given element
+   */
+  public async getAttributeSafe(
+    selector: string,
+    attributeName: string,
+    element?: ElementHandle,
+  ): Promise<string> {
+    try {
+      if (element !== undefined) {
+        await element.waitForSelector(selector);
+        const e = await element.$(selector);
+        return await e!.getAttribute(attributeName) ?? '';
+      }
+      return await this.page.getAttribute(selector, attributeName) ?? '';
+    } catch {
+      return '';
+    }
   }
 }

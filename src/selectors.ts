@@ -48,6 +48,20 @@ export default {
         description: "//p[contains(@class,'pv-entity__description')]/span[2]",
         activitiesAndSocieties: "//span[contains(@class,'activities-societies')]",
       },
+      certifications: {
+        section: "//section[contains(@class,'pv-profile-section--certifications-section')]",
+        seeMore: "//div[contains(@class,'pv-profile-section__actions-inline')]//li-icon[@type='chevron-down-icon']/parent::button",
+        item: "//li[contains(@class,'pv-certification-entity')]",
+        companyURL: '//a',
+        summary: "//div[contains(@class,'pv-certifications__summary-info')]",
+        name: '//h3',
+        companyName: '//p[1]/span[2]',
+        dates: '//p[2]/span[2]',
+        credential: {
+          id: '//p[3]//span[2]',
+          url: "//a[contains(@class,'pv-certifications-entity__credential-link')]",
+        },
+      },
     },
   },
 };
