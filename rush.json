@@ -385,11 +385,11 @@
    */
   "projects": [
     {
-      "packageName": "linkedjs",
+      "packageName": "@linked/core",
       "projectFolder": "core"
     },
     {
-      "packageName": "linkedjs-api",
+      "packageName": "@linked/api",
       "projectFolder": "api"
     }
     // {
