@@ -387,6 +387,10 @@
     {
       "packageName": "linkedjs",
       "projectFolder": "core"
+    },
+    {
+      "packageName": "linkedjs-api",
+      "projectFolder": "api"
     }
     // {
     //   /**
