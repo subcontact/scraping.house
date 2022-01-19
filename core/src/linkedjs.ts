@@ -32,7 +32,7 @@ export default class Linkedjs {
      * @returns A new onstance of Linkedjs by initialising browser, browser context
      * and creating a new page
      */
-  public static async init(browser: 'chrome' | 'firefox' | 'webkit' = 'firefox', launchOptions: LaunchOptions = {}, contextOptions?: BrowserContextOptions, authenticatedContextPath: string = 'linkedjs.json'): Promise<Linkedjs> {
+  public static async init(browser: 'chrome' | 'firefox' | 'webkit' = 'firefox', launchOptions: LaunchOptions = {}, contextOptions: BrowserContextOptions | undefined = undefined, authenticatedContextPath: string = 'linkedjs.json'): Promise<Linkedjs> {
     let browserType: BrowserType;
     let bc: BrowserContext;
     switch (browser) {
@@ -97,10 +97,12 @@ export default class Linkedjs {
     await this.browser.close();
   }
 
-  private constructor(browser: Browser,
+  private constructor(
+    browser: Browser,
     context: BrowserContext,
     page: Page,
-    authenticatedContextPath: string) {
+    authenticatedContextPath: string,
+  ) {
     this.browser = browser;
     this.context = context;
     this.page = page;

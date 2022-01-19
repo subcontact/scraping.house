@@ -10,14 +10,16 @@
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "project": "./tsconfig.json"
+        "project": ["./tsconfig.json"]
     },
     "plugins": [
         "@typescript-eslint"
     ],
     "rules": {
         "semi": "error",
-        "no-await-in-loop": "off"
+        "no-await-in-loop": "off",
+        "no-console": "off"
     }
+    
    
 }
