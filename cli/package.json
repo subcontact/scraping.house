@@ -1,5 +1,5 @@
 {
-  "name": "@linked/cli",
+  "name": "@scraping.house/cli",
   "version": "0.0.0",
   "description": "CLI to automate your LinkedIn interactions",
   "author": "Makepad Developers <dev@makepad.fr>",

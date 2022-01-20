@@ -1,5 +1,5 @@
 {
-  "name": "@linked/core",
+  "name": "@scraping.house/linked",
   "version": "1.0.0",
   "description": "A toolkit to automate your LinkedIn interactions",
   "main": "dist/index.js",

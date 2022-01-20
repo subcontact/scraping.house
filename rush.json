@@ -385,15 +385,15 @@
    */
   "projects": [
     {
-      "packageName": "@linked/core",
-      "projectFolder": "core"
+      "packageName": "@scraping.house/linked",
+      "projectFolder": "modules/linked"
     },
     {
-      "packageName": "@linked/api",
+      "packageName": "@scraping.house/api",
       "projectFolder": "api"
     },
     {
-      "packageName": "@linked/cli",
+      "packageName": "@scraping.house/cli",
       "projectFolder": "cli"
     }
     // {
