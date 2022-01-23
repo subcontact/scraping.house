@@ -30,6 +30,8 @@ scopes:
     description: All changes related to the core modules files in general way
   - name: api
     description: All changes related to the API module
+  - name: cli
+    description: All changes related to the CLI module
 conventions:
   - name: build
     description: Changes that affect the build system or external dependencies
