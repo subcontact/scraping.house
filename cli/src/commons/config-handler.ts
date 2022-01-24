@@ -56,4 +56,12 @@ export default class ConfigHandler {
   public getAcccounts(): string[] {
     return Object.keys(this.config.get(`${this.service}`));
   }
+
+  /**
+   * Deletes the login information for the given account in the current service
+   * @param username The username of the account
+   */
+  public removeAccount(username: string) {
+    this.config.delete(`${this.service}.${username}`);
+  }
 }
