@@ -16,76 +16,82 @@ oclif example Hello World CLI
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g oclif-hello-world
-$ oex COMMAND
+$ npm install -g @scraping.house/cli
+$ s COMMAND
 running command...
-$ oex (--version)
-oclif-hello-world/0.0.0 darwin-x64 node-v16.13.1
-$ oex --help [COMMAND]
+$ s (--version)
+@scraping.house/cli/0.0.0 darwin-x64 node-v17.3.0
+$ s --help [COMMAND]
 USAGE
-  $ oex COMMAND
+  $ s COMMAND
 ...
 ```
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`oex hello PERSON`](#oex-hello-person)
-* [`oex hello world`](#oex-hello-world)
-* [`oex help [COMMAND]`](#oex-help-command)
-* [`oex plugins`](#oex-plugins)
-* [`oex plugins:inspect PLUGIN...`](#oex-pluginsinspect-plugin)
-* [`oex plugins:install PLUGIN...`](#oex-pluginsinstall-plugin)
-* [`oex plugins:link PLUGIN`](#oex-pluginslink-plugin)
-* [`oex plugins:uninstall PLUGIN...`](#oex-pluginsuninstall-plugin)
-* [`oex plugins update`](#oex-plugins-update)
+* [`s config get [FILE]`](#s-config-get-file)
+* [`s config set [FILE]`](#s-config-set-file)
+* [`s help [COMMAND]`](#s-help-command)
+* [`s linked company [FILE]`](#s-linked-company-file)
+* [`s linked group [FILE]`](#s-linked-group-file)
+* [`s linked login`](#s-linked-login)
+* [`s linked logout [FILE]`](#s-linked-logout-file)
+* [`s linked me get [FILE]`](#s-linked-me-get-file)
+* [`s linked me post [FILE]`](#s-linked-me-post-file)
+* [`s linked page [FILE]`](#s-linked-page-file)
+* [`s linked profile [FILE]`](#s-linked-profile-file)
+* [`s plugins`](#s-plugins)
+* [`s plugins:inspect PLUGIN...`](#s-pluginsinspect-plugin)
+* [`s plugins:install PLUGIN...`](#s-pluginsinstall-plugin)
+* [`s plugins:link PLUGIN`](#s-pluginslink-plugin)
+* [`s plugins:uninstall PLUGIN...`](#s-pluginsuninstall-plugin)
+* [`s plugins update`](#s-plugins-update)
 
-## `oex hello PERSON`
+## `s config get [FILE]`
 
-Say hello
+describe the command here
 
 ```
 USAGE
-  $ oex hello [PERSON] -f <value>
-
-ARGUMENTS
-  PERSON  Person to say hello to
+  $ s config get [FILE] [-n <value>] [-f]
 
 FLAGS
-  -f, --from=<value>  (required) Whom is saying hello
+  -f, --force
+  -n, --name=<value>  name to print
 
 DESCRIPTION
-  Say hello
+  describe the command here
 
 EXAMPLES
-  $ oex hello friend --from oclif
-  hello friend from oclif! (./src/commands/hello/index.ts)
+  $ s config get
 ```
 
-_See code: [dist/commands/hello/index.ts](https://github.com/oclif/hello-world/blob/v0.0.0/dist/commands/hello/index.ts)_
+## `s config set [FILE]`
 
-## `oex hello world`
-
-Say hello world
+describe the command here
 
 ```
 USAGE
-  $ oex hello world
+  $ s config set [FILE] [-n <value>] [-f]
+
+FLAGS
+  -f, --force
+  -n, --name=<value>  name to print
 
 DESCRIPTION
-  Say hello world
+  describe the command here
 
 EXAMPLES
-  $ oex hello world
-  hello world! (./src/commands/hello/world.ts)
+  $ s config set
 ```
 
-## `oex help [COMMAND]`
+## `s help [COMMAND]`
 
-Display help for oex.
+Display help for s.
 
 ```
 USAGE
-  $ oex help [COMMAND] [-n]
+  $ s help [COMMAND] [-n]
 
 ARGUMENTS
   COMMAND  Command to show help for.
@@ -94,18 +100,173 @@ FLAGS
   -n, --nested-commands  Include all nested commands in the output.
 
 DESCRIPTION
-  Display help for oex.
+  Display help for s.
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.10/src/commands/help.ts)_
 
-## `oex plugins`
+## `s linked company [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ s linked company [FILE] [-n <value>] [-f]
+
+FLAGS
+  -f, --force
+  -n, --name=<value>  name to print
+
+DESCRIPTION
+  describe the command here
+
+EXAMPLES
+  $ s linked company
+```
+
+## `s linked group [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ s linked group [FILE] [-n <value>] [-f]
+
+FLAGS
+  -f, --force
+  -n, --name=<value>  name to print
+
+DESCRIPTION
+  describe the command here
+
+EXAMPLES
+  $ s linked group
+```
+
+## `s linked login`
+
+login to LinkedIn account
+
+```
+USAGE
+  $ s linked login -u <value> [-p <value>] [--cookiePath <value>] [-f] [--headless]
+
+FLAGS
+  -f, --force             Override existing configuration
+  -p, --password=<value>  LinkedIn password
+  -u, --username=<value>  (required) LinkedIn username
+  --cookiePath=<value>    The path to save cookie file to
+  --[no-]headless         Use browser in headless mode
+
+DESCRIPTION
+  login to LinkedIn account
+
+EXAMPLES
+  $ s linked login
+```
+
+## `s linked logout [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ s linked logout [FILE] [-n <value>] [-f]
+
+FLAGS
+  -f, --force
+  -n, --name=<value>  name to print
+
+DESCRIPTION
+  describe the command here
+
+EXAMPLES
+  $ s linked logout
+```
+
+## `s linked me get [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ s linked me get [FILE] [-n <value>] [-f]
+
+FLAGS
+  -f, --force
+  -n, --name=<value>  name to print
+
+DESCRIPTION
+  describe the command here
+
+EXAMPLES
+  $ s linked me get
+```
+
+## `s linked me post [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ s linked me post [FILE] [-n <value>] [-f]
+
+FLAGS
+  -f, --force
+  -n, --name=<value>  name to print
+
+DESCRIPTION
+  describe the command here
+
+EXAMPLES
+  $ s linked me post
+```
+
+## `s linked page [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ s linked page [FILE] [-n <value>] [-f]
+
+FLAGS
+  -f, --force
+  -n, --name=<value>  name to print
+
+DESCRIPTION
+  describe the command here
+
+EXAMPLES
+  $ s linked page
+```
+
+## `s linked profile [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ s linked profile [FILE] [-n <value>] [-f]
+
+FLAGS
+  -f, --force
+  -n, --name=<value>  name to print
+
+DESCRIPTION
+  describe the command here
+
+EXAMPLES
+  $ s linked profile
+```
+
+## `s plugins`
 
 List installed plugins.
 
 ```
 USAGE
-  $ oex plugins [--core]
+  $ s plugins [--core]
 
 FLAGS
   --core  Show core plugins.
@@ -114,18 +275,18 @@ DESCRIPTION
   List installed plugins.
 
 EXAMPLES
-  $ oex plugins
+  $ s plugins
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.0.11/src/commands/plugins/index.ts)_
+_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.0.12/src/commands/plugins/index.ts)_
 
-## `oex plugins:inspect PLUGIN...`
+## `s plugins:inspect PLUGIN...`
 
 Displays installation properties of a plugin.
 
 ```
 USAGE
-  $ oex plugins:inspect PLUGIN...
+  $ s plugins:inspect PLUGIN...
 
 ARGUMENTS
   PLUGIN  [default: .] Plugin to inspect.
@@ -138,16 +299,16 @@ DESCRIPTION
   Displays installation properties of a plugin.
 
 EXAMPLES
-  $ oex plugins:inspect myplugin
+  $ s plugins:inspect myplugin
 ```
 
-## `oex plugins:install PLUGIN...`
+## `s plugins:install PLUGIN...`
 
 Installs a plugin into the CLI.
 
 ```
 USAGE
-  $ oex plugins:install PLUGIN...
+  $ s plugins:install PLUGIN...
 
 ARGUMENTS
   PLUGIN  Plugin to install.
@@ -169,23 +330,23 @@ DESCRIPTION
   the CLI without the need to patch and update the whole CLI.
 
 ALIASES
-  $ oex plugins add
+  $ s plugins add
 
 EXAMPLES
-  $ oex plugins:install myplugin 
+  $ s plugins:install myplugin 
 
-  $ oex plugins:install https://github.com/someuser/someplugin
+  $ s plugins:install https://github.com/someuser/someplugin
 
-  $ oex plugins:install someuser/someplugin
+  $ s plugins:install someuser/someplugin
 ```
 
-## `oex plugins:link PLUGIN`
+## `s plugins:link PLUGIN`
 
 Links a plugin into the CLI for development.
 
 ```
 USAGE
-  $ oex plugins:link PLUGIN
+  $ s plugins:link PLUGIN
 
 ARGUMENTS
   PATH  [default: .] path to plugin
@@ -203,16 +364,16 @@ DESCRIPTION
   command will override the user-installed or core plugin implementation. This is useful for development work.
 
 EXAMPLES
-  $ oex plugins:link myplugin
+  $ s plugins:link myplugin
 ```
 
-## `oex plugins:uninstall PLUGIN...`
+## `s plugins:uninstall PLUGIN...`
 
 Removes a plugin from the CLI.
 
 ```
 USAGE
-  $ oex plugins:uninstall PLUGIN...
+  $ s plugins:uninstall PLUGIN...
 
 ARGUMENTS
   PLUGIN  plugin to uninstall
@@ -225,17 +386,17 @@ DESCRIPTION
   Removes a plugin from the CLI.
 
 ALIASES
-  $ oex plugins unlink
-  $ oex plugins remove
+  $ s plugins unlink
+  $ s plugins remove
 ```
 
-## `oex plugins update`
+## `s plugins update`
 
 Update installed plugins.
 
 ```
 USAGE
-  $ oex plugins update [-h] [-v]
+  $ s plugins update [-h] [-v]
 
 FLAGS
   -h, --help     Show CLI help.
