@@ -35,7 +35,7 @@ USAGE
 * [`s linked company [FILE]`](#s-linked-company-file)
 * [`s linked group [FILE]`](#s-linked-group-file)
 * [`s linked login`](#s-linked-login)
-* [`s linked logout [FILE]`](#s-linked-logout-file)
+* [`s linked logout`](#s-linked-logout)
 * [`s linked me get [FILE]`](#s-linked-me-get-file)
 * [`s linked me post [FILE]`](#s-linked-me-post-file)
 * [`s linked page [FILE]`](#s-linked-page-file)
@@ -165,20 +165,19 @@ EXAMPLES
   $ s linked login
 ```
 
-## `s linked logout [FILE]`
+## `s linked logout`
 
-describe the command here
+remove the saved LinkedIn account
 
 ```
 USAGE
-  $ s linked logout [FILE] [-n <value>] [-f]
+  $ s linked logout [-u <value>]
 
 FLAGS
-  -f, --force
-  -n, --name=<value>  name to print
+  -u, --username=<value>  username of the account to remove
 
 DESCRIPTION
-  describe the command here
+  remove the saved LinkedIn account
 
 EXAMPLES
   $ s linked logout
