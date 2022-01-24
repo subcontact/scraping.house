@@ -14,7 +14,7 @@ import fs from 'fs';
 import selectors from './selectors';
 import UserProfile from './user-profile';
 
-export default class Linkedjs {
+export default class Linked {
   private browser: Browser;
 
   private context: BrowserContext;
@@ -37,7 +37,7 @@ export default class Linkedjs {
     launchOptions: LaunchOptions = {},
     contextOptions: BrowserContextOptions | undefined = undefined,
     authenticatedContextPath: string = 'linkedjs.json'
-  ): Promise<Linkedjs> {
+  ): Promise<Linked> {
     let browserType: BrowserType;
     let bc: BrowserContext;
     switch (browser) {
@@ -62,7 +62,7 @@ export default class Linkedjs {
     }
     const page: Page = await bc.newPage();
     await page.goto('https://linkedin.com');
-    return new Linkedjs(b, bc, page, authenticatedContextPath);
+    return new Linked(b, bc, page, authenticatedContextPath);
   }
 
   /**
@@ -72,7 +72,7 @@ export default class Linkedjs {
    * @param rememberMe The boolean indicating that login credentials will be remembered next time.
    */
   public async login(username: string, password: string, rememberMe: boolean = true) {
-    if (Linkedjs.isFileExists(this.authenticatedContextPath)) {
+    if (Linked.isFileExists(this.authenticatedContextPath)) {
       // If the authenticated context already exists, do nothing
       return;
     }
@@ -80,7 +80,7 @@ export default class Linkedjs {
     await this.page.fill(selectors.login.password, password);
     await this.page.click(selectors.login.submit);
     if (rememberMe) {
-      Linkedjs.saveAuthenticatedContext(this.context, this.authenticatedContextPath);
+      Linked.saveAuthenticatedContext(this.context, this.authenticatedContextPath);
     }
   }
 

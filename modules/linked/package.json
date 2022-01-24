@@ -2,7 +2,11 @@
   "name": "@scraping.house/linked",
   "version": "1.0.0",
   "description": "A toolkit to automate your LinkedIn interactions",
-  "main": "dist/index.js",
+  "main": "out/linked.js",
+  "types": "out/linked.d.ts",
+  "files": [
+    "out"
+  ],
   "scripts": {
     "build": "node_modules/.bin/eslint -c .eslintrc.json --fix src/*.ts && ./node_modules/.bin/tsc -p tsconfig.json",
     "prestart": "npm run lint --fix && npm run compile",
