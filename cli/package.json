@@ -22,7 +22,7 @@
     "@oclif/plugin-plugins": "^2.0.1",
     "@scraping.house/linked": "workspace:*",
     "cli-ux": "~6.0.8",
-    "configstore": "~6.0.0"
+    "configstore": "~5.0.1"
   },
   "devDependencies": {
     "@oclif/test": "^2",
