@@ -80,7 +80,7 @@ export default class Linked {
     await this.page.fill(selectors.login.password, password);
     await this.page.click(selectors.login.submit);
     if (rememberMe) {
-      Linked.saveAuthenticatedContext(this.context, this.authenticatedContextPath);
+      await Linked.saveAuthenticatedContext(this.context, this.authenticatedContextPath);
     }
   }
 
