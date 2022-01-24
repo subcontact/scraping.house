@@ -1,5 +1,5 @@
-configfilepath: /Users/kaanyagci/Documents/Makepad/linkedjs/.concom.yml
-path: /Users/kaanyagci/Documents/Makepad/linkedjs
+configfilepath: /Users/kaanyagci/Documents/Makepad/scraping.house/.concom.yml
+path: /Users/kaanyagci/Documents/Makepad/scraping.house
 version: ''
 scopes:
   - name: auth
@@ -32,6 +32,10 @@ scopes:
     description: All changes related to the API module
   - name: cli
     description: All changes related to the CLI module
+  - name: linked
+    description: All changes related to the linked module
+  - name: common
+    description: All changed related to the common package
 conventions:
   - name: build
     description: Changes that affect the build system or external dependencies
