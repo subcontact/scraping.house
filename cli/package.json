@@ -1,15 +1,15 @@
 {
   "name": "@scraping.house/cli",
   "version": "0.0.0",
-  "description": "CLI to automate your LinkedIn interactions",
+  "description": "CLI to interact with Scraping House scrapers",
   "author": "Makepad Developers <dev@makepad.fr>",
   "bin": {
-    "linked": "./bin/run"
+    "s": "./bin/run"
   },
-  "homepage": "https://github.com/Makepad-fr/linked",
+  "homepage": "https://github.com/Makepad-fr/scraping.house",
   "license": "MIT",
   "main": "dist/index.js",
-  "repository": "Makepad-fr/linked",
+  "repository": "Makepad-fr/scraping.house",
   "files": [
     "/bin",
     "/dist",
@@ -19,7 +19,10 @@
   "dependencies": {
     "@oclif/core": "^1",
     "@oclif/plugin-help": "^5",
-    "@oclif/plugin-plugins": "^2.0.1"
+    "@oclif/plugin-plugins": "^2.0.1",
+    "@scraping.house/linked": "workspace:*",
+    "cli-ux": "~6.0.8",
+    "configstore": "~6.0.0"
   },
   "devDependencies": {
     "@oclif/test": "^2",
@@ -36,11 +39,12 @@
     "shx": "^0.3.3",
     "ts-node": "^10.2.1",
     "tslib": "^2.3.1",
-    "typescript": "^4.4.3"
+    "typescript": "^4.4.3",
+    "@types/configstore": "~5.0.1"
   },
   "oclif": {
-    "bin": "linked",
-    "dirname": "oex",
+    "bin": "s",
+    "dirname": "cli",
     "commands": "./dist/commands",
     "plugins": [
       "@oclif/plugin-help",
@@ -48,13 +52,25 @@
     ],
     "topicSeparator": " ",
     "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
+      "config": {
+        "description": "manage configuration"
+      },
+      "linked": {
+        "description": "interact with LinkedIn"
+      },
+      "linked:me": {
+        "description": "interact with the current user profile"
+      },
+      "insta": {
+        "description": "interact with Instagram"
+      },
+      "fb": {
+        "description": "interact with Facebook"
       }
     }
   },
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
+    "build": "shx rm -rf dist && tsc -b && oclif readme",
     "lint": "eslint . --ext .ts --config .eslintrc.json",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint",
@@ -65,7 +81,7 @@
   "engines": {
     "node": ">=12.0.0"
   },
-  "bugs": "https://github.com/Makepad-fr/linked/issues",
+  "bugs": "https://github.com/Makepad-fr/scraping.house/issues",
   "keywords": [
     "oclif"
   ],
