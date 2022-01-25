@@ -58,12 +58,14 @@ export default class LinkedLogin extends Command {
       undefined,
       this.configHandler.getAuthContextPath(flags.username)
     );
-    this.log(`Navigated to the LinkedIn home page`);
     await linkedin.login(flags.username, flags.password!);
-    this.log(`Logged in to the LinkedIn`);
     await linkedin.close();
-    this.log('Login to LinkedIn completed');
     this.configHandler.addAccount(flags.username, flags.password!);
-    this.log('Account added to the configstore');
+    const setDefaultAccount: boolean = await cli.prompt(
+      `Do you want to set ${flags.username} as the default account for LinkedIn.`
+    );
+    if (setDefaultAccount) {
+      this.configHandler.setDefaultAccount(flags.username);
+    }
   }
 }
