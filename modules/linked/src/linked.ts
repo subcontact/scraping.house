@@ -12,7 +12,9 @@ import {
 
 import fs from 'fs';
 import selectors from './selectors';
-import UserProfile from './user-profile';
+import UserProfileModule from './user-profile-module';
+
+export { UserProfile } from './user-profile-module';
 
 export default class Linked {
   private browser: Browser;
@@ -90,8 +92,11 @@ export default class Linked {
    * @param isolated If true the user profile will be created on a new page. Defaults to true
    * @returns The UserProfile object
    */
-  public async user(id: string, isolated: boolean = true): Promise<UserProfile> {
-    const u: UserProfile = new UserProfile(id, isolated ? await this.context.newPage() : this.page);
+  public async user(id: string, isolated: boolean = true): Promise<UserProfileModule> {
+    const u: UserProfileModule = new UserProfileModule(
+      id,
+      isolated ? await this.context.newPage() : this.page
+    );
     await u.init();
     return u;
   }

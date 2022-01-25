@@ -15,7 +15,19 @@ type ElementHandlePromiseOrStringPromiseOrString =
   | StringOrNotDefined
   | ElementHandle<SVGElement | HTMLElement>;
 
-export default class UserProfile extends Module {
+export interface UserProfile {
+  educations?: Education[];
+  experiences?: Experience[];
+  certificates?: Certification[];
+  fullName?: string;
+  shortDescription?: string;
+  about?: string;
+  location?: string;
+  isPremium?: boolean;
+  isInfluencer?: boolean;
+}
+
+export default class UserProfileModule extends Module {
   private id: string;
 
   public constructor(id: string, page: Page) {
