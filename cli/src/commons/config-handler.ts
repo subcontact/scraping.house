@@ -27,7 +27,8 @@ export default class ConfigHandler {
    * @param password The password of the account to add
    */
   public addAccount(username: string, password: string) {
-    this.config.set(`${this.service}.${username}`, password);
+    this.config.set(`${this.getAccountPath(username)}.password`, password);
+    this.config.set(`${this.getAccountPath(username)}.createdAt`, Date.now());
   }
 
   /**
@@ -36,7 +37,7 @@ export default class ConfigHandler {
    * @returns True if the given account exists in the given service
    */
   public checkAccount(username: string): boolean {
-    return this.config.has(`${this.service}.${username}`);
+    return this.config.has(this.getAccountPath(username));
   }
 
   /**
@@ -51,7 +52,7 @@ export default class ConfigHandler {
 
   /**
    * Get the list of accounts for the current service
-   * @returns The list of the accoutns
+   * @returns The list of the accounts
    */
   public getAcccounts(): string[] {
     return Object.keys(this.config.get(`${this.service}`));
@@ -62,6 +63,70 @@ export default class ConfigHandler {
    * @param username The username of the account
    */
   public removeAccount(username: string) {
-    this.config.delete(`${this.service}.${username}`);
+    this.config.delete(this.getAccountPath(username));
+    // If the deleted account is the default account, we need to remove default account too
+    if (this.defaultAccount === username) {
+      this.config.delete(this.defaultAccountPath);
+    }
+  }
+
+  /**
+   * Set the default account for the current service
+   * @param username The username for the default account
+   * @returns True if the default account updated sucessfully, false if not
+   */
+  public setDefaultAccount(username: string): boolean {
+    if (this.checkAccount(username)) {
+      this.config.set(this.defaultAccountPath, username);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Checks if there's a default account set for the current service
+   * @returns True if the default account is set for the current service, false if not
+   */
+  public get hasDefaultAccount(): boolean {
+    return this.config.has(this.defaultAccountPath);
+  }
+
+  /**
+   * Get the default account for the current service
+   * @returns The username for the default account for the current service, undefined if it does not exists
+   */
+  public get defaultAccount(): string | undefined {
+    if (this.hasDefaultAccount) {
+      return this.config.get(this.defaultAccountPath);
+    }
+    return undefined;
+  }
+
+  /**
+   * Get the password of the account related to the username for the current service
+   * @param username The username of the account
+   * @returns The password of the account related to the username. If account does not exists, returns undefined
+   */
+  public getPassword(username: string): string | undefined {
+    if (this.checkAccount(username)) {
+      return this.config.get(`${this.getAccountPath(username)}.password`);
+    }
+    return undefined;
+  }
+
+  /**
+   * Calculate the path in the config store for the current service and given username
+   * @param username the username of the account to calculate the path
+   * @returns The path in the config store for the given username and the current service
+   */
+  private getAccountPath(username: string): string {
+    return `services.${this.service}.accounts.${username}`;
+  }
+
+  /**
+   * Get the default account path in the configstore for the current service
+   */
+  private get defaultAccountPath(): string {
+    return `services.${this.service}.selectedAccount`;
   }
 }
