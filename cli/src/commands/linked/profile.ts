@@ -123,7 +123,7 @@ export default class LinkedProfile extends Command {
     if (flags.isInfluencer) {
       result.isInfluencer = await userProfile.isInfluencer();
     }
-
+    await linkedin.close();
     this.log(JSON.stringify(result, undefined, 4));
 
     // TODO: Convert output to other formats
