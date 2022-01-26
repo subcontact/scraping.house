@@ -12,7 +12,7 @@ export default {
         location: "//div[contains(@class,'pv-text-details__left-panel')][2]/span[1]",
         info: "//section[contains(@class,'pv-about-section')]/div",
         infoTextToDelete: "//section[contains(@class,'pv-about-section')]/div/span",
-        premiumBadge: "//li-icon[@type='linkedin-bug']",
+        premiumBadge: "//span[contains(@class, 'pv-member-badge')]/li-icon[@type='linkedin-bug']",
         influencerBadge: "//li-icon[@type='linkedin-influencer-color-icon']"
       },
       experience: {
