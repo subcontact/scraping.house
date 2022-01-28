@@ -8,6 +8,7 @@ import Education from './models/education';
 import School from './models/school';
 import Module from './models/module';
 import Certification from './models/certification';
+import { Skill } from './models/skill';
 
 type StringOrNotDefined = string | null | undefined;
 type ElementHandlePromiseOrStringPromiseOrString =
@@ -25,6 +26,7 @@ export interface UserProfile {
   location?: string;
   isPremium?: boolean;
   isInfluencer?: boolean;
+  skills?: Skill[];
 }
 
 export default class UserProfileModule extends Module {
@@ -309,6 +311,57 @@ export default class UserProfileModule extends Module {
         )
       )
     );
+  }
+
+  /**
+   * Get the skills and endorsements of the current user
+   * @returns An array of user skills and endorsements
+   */
+  public async skills(): Promise<Skill[]> {
+    await this.init();
+    try {
+      await this.helpers.scrollUntilElementAppears(selectors.user.profile.skills.section);
+    } catch (e) {
+      console.warn('User has no skills section');
+      return [];
+    }
+    const section: ElementHandle = (await this.page.$(
+      selectors.user.profile.skills.section
+    )) as ElementHandle;
+    await this.helpers.clickUntilElementDissapears(selectors.user.profile.skills.seeMore, section);
+    await this.page.waitForTimeout(5000);
+
+    return this.page
+      .$$(`${selectors.user.profile.skills.section}${selectors.user.profile.skills.item}`)
+      .then((skillItems) =>
+        Promise.all(
+          skillItems.map(async (skillItem) =>
+            Promise.all([
+              // skillName
+              this.helpers.safeTextContent(selectors.user.profile.skills.entityName, skillItem),
+              // nbEndorsements
+              this.helpers.safeTextContent(
+                `${selectors.user.profile.skills.itemDetailsLink}${selectors.user.profile.skills.numberOfEndorsements}`,
+                skillItem
+              ),
+              // endorsementsLink
+              this.helpers.getAttributeSafe(selectors.user.profile.skills.itemDetailsLink, 'href', skillItem),
+              // assesmentBadge
+              this.helpers.isElementPresent(selectors.user.profile.skills.assesmentBadge, skillItem)
+            ]).then(([skillName, nbEndorsements, endorsementsLink, assesmentBadge]) => {
+              console.log(
+                `Skill name ${skillName.trim()} Nb endorsements: ${nbEndorsements} endorsements link: ${endorsementsLink} has assesment badge: ${assesmentBadge}`
+              );
+              return <Skill>{
+                // TODO: Complete this by getting the list of endorsement users
+                endorsements: [],
+                name: skillName,
+                hasLinkedInAssesmentBadge: assesmentBadge
+              };
+            })
+          )
+        )
+      );
   }
 
   /**
