@@ -44,6 +44,9 @@ export default class LinkedProfile extends Command {
     isInfluencer: Flags.boolean({
       description: 'Check if the user has LinkedIn influencer badge on their account'
     }),
+    skills: Flags.boolean({
+      description: 'Get user skills and endorsements'
+    }),
     // TODO: Add other flags for other selectors
     incognito: Flags.boolean({ description: 'Enables the incognito mode (without any authentication)' }),
     headless: Flags.boolean({ description: 'Enables the headless browsing', default: true, allowNo: true })
@@ -84,6 +87,7 @@ export default class LinkedProfile extends Command {
       flags.about = true;
       flags.isPremium = true;
       flags.isInfluencer = true;
+      flags.skills = true;
     }
 
     const result: UserProfile = {};
@@ -122,6 +126,9 @@ export default class LinkedProfile extends Command {
 
     if (flags.isInfluencer) {
       result.isInfluencer = await userProfile.isInfluencer();
+    }
+    if (flags.skills) {
+      result.skills = await userProfile.skills();
     }
     await linkedin.close();
     this.log(JSON.stringify(result, undefined, 4));
