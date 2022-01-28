@@ -68,6 +68,16 @@ export default {
           id: '//p[3]//span[2]',
           url: "//a[contains(@class,'pv-certifications-entity__credential-link')]"
         }
+      },
+      skills: {
+        section: "//section[contains(@class, 'pv-skill-categories-section')]",
+        item: "//div[contains(@class, 'pv-skill-category-entity__skill-wrapper')]",
+        entityName: "//span[contains(@class, 'pv-skill-category-entity__name-text')]",
+        itemDetailsLink: "//div/a[contains(@data-control-name, 'skills_endorsement_full_list')]",
+        numberOfEndorsements: '/span[2]',
+        assesmentBadge: "//div[contains(@class, 'pv-skill-entity__verified-icon')]",
+        seeMore:
+          "//button[contains(@class,' pv-skills-section__additional-skill')]//li-icon[@type='chevron-down-icon']/parent::button"
       }
     }
   }
