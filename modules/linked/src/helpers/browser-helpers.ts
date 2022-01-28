@@ -153,4 +153,23 @@ export default class BrowserHelpers {
       return '';
     }
   }
+
+  /**
+   * Checks if the selector is present in the current page or on the current element
+   * @param selector The selector to check if present
+   * @param element The parent element to evaluate the selector
+   * @returns True if the selector is present on the current element or on the current page
+   */
+  public async isElementPresent(selector: string, element?: ElementHandle): Promise<boolean> {
+    try {
+      if (element === undefined) {
+        await this.page.waitForSelector(selector);
+        return true;
+      }
+      await element.waitForSelector(selector);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }
