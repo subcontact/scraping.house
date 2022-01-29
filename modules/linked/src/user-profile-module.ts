@@ -9,6 +9,7 @@ import School from './models/school';
 import Module from './models/module';
 import Certification from './models/certification';
 import { Skill } from './models/skill';
+import { User } from './models/user';
 
 type StringOrNotDefined = string | null | undefined;
 type ElementHandlePromiseOrStringPromiseOrString =
@@ -315,9 +316,10 @@ export default class UserProfileModule extends Module {
 
   /**
    * Get the skills and endorsements of the current user
+   * @param detailed A boolean indicating that the result should contains the list of users endorsed the current user's skill or just the number of endorsements
    * @returns An array of user skills and endorsements
    */
-  public async skills(): Promise<Skill[]> {
+  public async skills(detailed: boolean = true): Promise<Skill[]> {
     await this.init();
     try {
       await this.helpers.scrollUntilElementAppears(selectors.user.profile.skills.section);
@@ -331,37 +333,84 @@ export default class UserProfileModule extends Module {
     await this.helpers.clickUntilElementDissapears(selectors.user.profile.skills.seeMore, section);
     await this.page.waitForTimeout(5000);
 
-    return this.page
-      .$$(`${selectors.user.profile.skills.section}${selectors.user.profile.skills.item}`)
-      .then((skillItems) =>
-        Promise.all(
-          skillItems.map(async (skillItem) =>
-            Promise.all([
-              // skillName
-              this.helpers.safeTextContent(selectors.user.profile.skills.entityName, skillItem),
-              // nbEndorsements
-              this.helpers.safeTextContent(
-                `${selectors.user.profile.skills.itemDetailsLink}${selectors.user.profile.skills.numberOfEndorsements}`,
-                skillItem
-              ),
-              // endorsementsLink
-              this.helpers.getAttributeSafe(selectors.user.profile.skills.itemDetailsLink, 'href', skillItem),
-              // assesmentBadge
-              this.helpers.isElementPresent(selectors.user.profile.skills.assesmentBadge, skillItem)
-            ]).then(([skillName, nbEndorsements, endorsementsLink, assesmentBadge]) => {
-              console.log(
-                `Skill name ${skillName.trim()} Nb endorsements: ${nbEndorsements} endorsements link: ${endorsementsLink} has assesment badge: ${assesmentBadge}`
-              );
-              return <Skill>{
-                // TODO: Complete this by getting the list of endorsement users
-                endorsements: [],
-                name: skillName,
-                hasLinkedInAssesmentBadge: assesmentBadge
-              };
-            })
-          )
+    const skillItems = await this.page.$$(
+      `${selectors.user.profile.skills.section}${selectors.user.profile.skills.item}`
+    );
+
+    const result: Skill[] = [];
+    console.log('HERE');
+
+    // eslint-disable-next-line
+    for (const skillItem of skillItems) {
+      const [skillName, hasLinkedInAssesmentBadge, numberOfEndorsements] = [
+        this.helpers.safeTextContent(selectors.user.profile.skills.entityName, skillItem),
+        this.helpers.isElementPresent(selectors.user.profile.skills.assesmentBadge, skillItem),
+        this.helpers.safeTextContent(
+          `${selectors.user.profile.skills.itemDetailsLink}${selectors.user.profile.skills.numberOfEndorsements}`,
+          skillItem
         )
-      );
+      ];
+      // TODO: Complete the getEndorsementsFromPopup function to get the complete list of endorsements
+      const nbe = parseInt(await numberOfEndorsements, 10);
+      const endorsers: User[] = detailed
+        ? await this.getEndorsementsFromPopup(
+            await skillItem.$(selectors.user.profile.skills.itemDetailsLink)
+          )
+        : [];
+      result.push(<Skill>{
+        endorsements: endorsers,
+        name: (await skillName).trim(),
+        hasLinkedInAssesmentBadge: await hasLinkedInAssesmentBadge,
+        numberOfEndorsements: nbe
+      });
+    }
+    return result;
+  }
+
+  /**
+   * Get the list of users endorsed the current user for the given skill
+   * @param element The link element redirects the endorsers list
+   * @returns An array of Users who endorsed the current user
+   */
+  public async getEndorsementsFromPopup(
+    element: ElementHandle<SVGElement | HTMLElement> | null
+  ): Promise<User[]> {
+    await element?.click();
+    await this.page.waitForSelector(selectors.user.profile.skills.enodorsements.popup);
+    console.log('Pop-up appeared');
+    const popupContainer = await this.page.$(selectors.user.profile.skills.enodorsements.popup);
+    const listContainer = await popupContainer?.waitForSelector(
+      selectors.user.profile.skills.enodorsements.listContainer
+    );
+    let elementScrollCompleted: boolean = await this.helpers.elementCompletelyScrolled(listContainer!);
+    // eslint-disable-next-line
+    while (!elementScrollCompleted) {
+      await this.helpers.scrollElement(listContainer!);
+      await this.page.waitForTimeout(Math.random() * 5000 + 5000);
+      elementScrollCompleted = await this.helpers.elementCompletelyScrolled(listContainer!);
+    }
+    const endorsers = await listContainer!.$$(selectors.user.profile.skills.enodorsements.entity);
+    const users = await Promise.all(
+      endorsers.map(
+        async (endorser) =>
+          <User>{
+            name: await this.helpers.safeTextContent(
+              selectors.user.profile.skills.enodorsements.entityName,
+              endorser
+            ),
+            username: (
+              await this.helpers.getAttributeSafe(
+                selectors.user.profile.skills.enodorsements.entityLink,
+                'href',
+                endorser
+              )
+            ).replace(/^\/in\/([^/]+)\/$/, '$1')
+          }
+      )
+    );
+    await (await popupContainer?.$(selectors.user.profile.skills.enodorsements.closeButton))?.click();
+    // Return the set
+    return users;
   }
 
   /**
