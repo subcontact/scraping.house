@@ -4,4 +4,5 @@ export interface Skill {
   name: string;
   endorsements: User[];
   hasLinkedInAssesmentBadge: boolean;
+  numberOfEndorsements: number;
 }
