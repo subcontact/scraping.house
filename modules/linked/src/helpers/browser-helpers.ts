@@ -172,4 +172,26 @@ export default class BrowserHelpers {
       return false;
     }
   }
+
+  /**
+   * Scroll the given element
+   * @param element The element to scroll
+   */
+  public async scrollElement(element: ElementHandle<SVGElement | HTMLElement>): Promise<void> {
+    return element.evaluate((node) => {
+      node.scrollBy(0, node.scrollHeight);
+      node.scrollHeight;
+    });
+  }
+
+  /**
+   * Checks if the given element is completely scrolled or not
+   * @param element The element to verify
+   * @returns True if the given element is completely scrolled, false if not
+   */
+  public async elementCompletelyScrolled(element: ElementHandle<SVGElement | HTMLElement>): Promise<boolean> {
+    return element.evaluate((node) => {
+      return node.scrollHeight - Math.abs(node.scrollTop) === node.clientHeight;
+    });
+  }
 }
