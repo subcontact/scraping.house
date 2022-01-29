@@ -77,7 +77,15 @@ export default {
         numberOfEndorsements: '/span[2]',
         assesmentBadge: "//div[contains(@class, 'pv-skill-entity__verified-icon')]",
         seeMore:
-          "//button[contains(@class,' pv-skills-section__additional-skill')]//li-icon[@type='chevron-down-icon']/parent::button"
+          "//button[contains(@class,' pv-skills-section__additional-skill')]//li-icon[@type='chevron-down-icon']/parent::button",
+        enodorsements: {
+          closeButton: "//button[contains(@aria-label, 'Dismiss')]",
+          popup: "//div[contains(@class, 'pv-profile-detail__modal') and contains(@role,'dialog')]",
+          entity: "//li[contains(@class, 'pv-endorsement-entity')]",
+          entityName: "//span[contains(@class, 'pv-endorsement-entity__name--has-hover')]",
+          entityLink: "//a[contains(@class, 'pv-endorsement-entity__link')]",
+          listContainer: "//div[contains(@class, 'artdeco-modal__content')]"
+        }
       }
     }
   }
