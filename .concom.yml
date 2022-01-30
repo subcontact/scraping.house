@@ -1,5 +1,5 @@
-configfilepath: /Users/kaanyagci/Documents/Makepad/scraping.house/.concom.yml
-path: /Users/kaanyagci/Documents/Makepad/scraping.house
+configfilepath: /Users/kaanyagci/Documents/makepad/scraping.house/.concom.yml
+path: /Users/kaanyagci/Documents/makepad/scraping.house
 version: ''
 scopes:
   - name: auth
@@ -36,6 +36,8 @@ scopes:
     description: All changes related to the linked module
   - name: common
     description: All changed related to the common package
+  - name: web
+    description: All changes realted to the web module
 conventions:
   - name: build
     description: Changes that affect the build system or external dependencies
