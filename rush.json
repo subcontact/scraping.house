@@ -395,6 +395,10 @@
     {
       "packageName": "@scraping.house/cli",
       "projectFolder": "cli"
+    },
+    {
+      "packageName": "@scraping.house/web",
+      "projectFolder": "web"
     }
     // {
     //   /**
