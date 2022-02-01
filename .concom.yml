@@ -38,6 +38,8 @@ scopes:
     description: All changed related to the common package
   - name: web
     description: All changes realted to the web module
+  - name: docs
+    description: All changes related docs folder
 conventions:
   - name: build
     description: Changes that affect the build system or external dependencies
