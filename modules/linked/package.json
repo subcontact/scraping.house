@@ -1,6 +1,6 @@
 {
   "name": "@scraping.house/linked",
-  "version": "1.0.0",
+  "version": "0.0.1-beta",
   "description": "A toolkit to automate your LinkedIn interactions",
   "main": "out/linked.js",
   "types": "out/linked.d.ts",
