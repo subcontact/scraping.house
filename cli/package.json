@@ -1,0 +1,89 @@
+{
+  "name": "@scraping.house/cli",
+  "version": "0.0.0",
+  "description": "CLI to interact with Scraping House scrapers",
+  "author": "Makepad Developers <dev@makepad.fr>",
+  "bin": {
+    "s": "./bin/run"
+  },
+  "homepage": "https://github.com/Makepad-fr/scraping.house",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "repository": "Makepad-fr/scraping.house",
+  "files": [
+    "/bin",
+    "/dist",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "dependencies": {
+    "@oclif/core": "^1",
+    "@oclif/plugin-help": "^5",
+    "@oclif/plugin-plugins": "^2.0.1",
+    "@scraping.house/linked": "workspace:*",
+    "cli-ux": "~6.0.8",
+    "configstore": "~5.0.1"
+  },
+  "devDependencies": {
+    "@oclif/test": "^2",
+    "@types/chai": "^4",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.9.4",
+    "chai": "^4",
+    "eslint": "^7.32.0",
+    "eslint-config-oclif": "^4",
+    "eslint-config-oclif-typescript": "^1.0.2",
+    "globby": "^11",
+    "mocha": "^9",
+    "oclif": "^2",
+    "shx": "^0.3.3",
+    "ts-node": "^10.2.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.3",
+    "@types/configstore": "~5.0.1"
+  },
+  "oclif": {
+    "bin": "s",
+    "dirname": "cli",
+    "commands": "./dist/commands",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-plugins"
+    ],
+    "topicSeparator": " ",
+    "topics": {
+      "config": {
+        "description": "manage configuration"
+      },
+      "linked": {
+        "description": "interact with LinkedIn"
+      },
+      "linked:me": {
+        "description": "interact with the current user profile"
+      },
+      "insta": {
+        "description": "interact with Instagram"
+      },
+      "fb": {
+        "description": "interact with Facebook"
+      }
+    }
+  },
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b && oclif readme",
+    "lint": "eslint . --ext .ts --config .eslintrc.json",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "posttest": "yarn lint",
+    "prepack": "yarn build && oclif manifest && oclif readme",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif readme && git add README.md"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "bugs": "https://github.com/Makepad-fr/scraping.house/issues",
+  "keywords": [
+    "oclif"
+  ],
+  "types": "dist/index.d.ts"
+}
