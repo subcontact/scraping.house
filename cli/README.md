@@ -39,7 +39,7 @@ USAGE
 * [`s linked me get [FILE]`](#s-linked-me-get-file)
 * [`s linked me post [FILE]`](#s-linked-me-post-file)
 * [`s linked page [FILE]`](#s-linked-page-file)
-* [`s linked profile [FILE]`](#s-linked-profile-file)
+* [`s linked profile`](#s-linked-profile)
 * [`s plugins`](#s-plugins)
 * [`s plugins:inspect PLUGIN...`](#s-pluginsinspect-plugin)
 * [`s plugins:install PLUGIN...`](#s-pluginsinstall-plugin)
@@ -240,20 +240,38 @@ EXAMPLES
   $ s linked page
 ```
 
-## `s linked profile [FILE]`
+## `s linked profile`
 
-describe the command here
+scrape information from a LinkedIn user profile
 
 ```
 USAGE
-  $ s linked profile [FILE] [-n <value>] [-f]
+  $ s linked profile -i <value> [-u <value>] [-o <value>] [--format csv|json] [--full] [--education] [--experiences]
+    [--certificates] [--fullName] [--shortDescription] [--location] [--about] [--isPremium] [--isInfluencer] [--skills]
+    [--incognito] [--headless]
 
 FLAGS
-  -f, --force
-  -n, --name=<value>  name to print
+  -i, --id=<value>        (required) The if of the LinkedIn user to scrape
+  -o, --output=<value>    The output file path
+  -u, --username=<value>  The username of the LinkedIn account to use
+  --about                 Get the about text of the user
+  --certificates          Get certifications of the user
+  --education             Get education information of the user
+  --experiences           Get education of the user
+  --format=<option>       [default: json] The format of the output
+                          <options: csv|json>
+  --full                  Get the full profile
+  --fullName              Get the user's full name
+  --[no-]headless         Enables the headless browsing
+  --incognito             Enables the incognito mode (without any authentication)
+  --isInfluencer          Check if the user has LinkedIn influencer badge on their account
+  --isPremium             Check if the user has LinkedIn premium badge on their account
+  --location              Get the location of the user
+  --shortDescription      Get the user's short description
+  --skills                Get user skills and endorsements
 
 DESCRIPTION
-  describe the command here
+  scrape information from a LinkedIn user profile
 
 EXAMPLES
   $ s linked profile
