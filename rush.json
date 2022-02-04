@@ -389,16 +389,8 @@
       "projectFolder": "modules/linked"
     },
     {
-      "packageName": "@scraping.house/api",
-      "projectFolder": "api"
-    },
-    {
       "packageName": "@scraping.house/cli",
       "projectFolder": "cli"
-    },
-    {
-      "packageName": "@scraping.house/web",
-      "projectFolder": "web"
     }
     // {
     //   /**
