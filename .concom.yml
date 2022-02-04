@@ -28,16 +28,12 @@ scopes:
     description: All changes related to the helper functions
   - name: core
     description: All changes related to the core modules files in general way
-  - name: api
-    description: All changes related to the API module
   - name: cli
     description: All changes related to the CLI module
   - name: linked
     description: All changes related to the linked module
   - name: common
     description: All changed related to the common package
-  - name: web
-    description: All changes realted to the web module
   - name: docs
     description: All changes related docs folder
 conventions:
